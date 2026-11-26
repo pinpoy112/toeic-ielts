@@ -1,6 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>WORDVERSE</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -206,6 +210,9 @@ select.inp option{background:var(--bg2);color:var(--tx)}
 .set .inp{width:auto;min-width:140px}
 input[type=range]{accent-color:var(--vio);width:160px}
 
+.ta{resize:vertical;min-height:170px;line-height:1.6;font-size:1rem}
+.runbar{position:sticky;top:68px;z-index:15;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;border-radius:16px;background:rgba(20,24,33,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line)}
+.tmr{font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums}
 @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
@@ -242,6 +249,8 @@ input[type=range]{accent-color:var(--vio);width:160px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 
+</head>
+<body>
 <div class="app" id="app">
   <aside class="side" id="side" aria-label="Main navigation"></aside>
   <div class="main">
@@ -374,7 +383,7 @@ var RAW=[
 var WORDS=RAW.map(function(r,i){return {id:i+1,c:r[0],s:r[1],w:r[2],ipa:r[3],pos:r[4],th:r[5],def:r[6],ex:r[7],exth:r[8],syn:r[9]?r[9].split("|"):[],lv:r[10]}});
 var BYID={}; WORDS.forEach(function(w){BYID[w.id]=w});
 var LV=["","Beginner","Intermediate","Advanced"];
-var NAV=[["home","Home","layout-dashboard"],["vocabulary","Vocabulary","book-open"],["categories","Categories","layout-grid"],["practice","Practice","layers"],["quiz","Quiz","list-checks"],["progress","My Progress","trending-up"],["favorites","Favorites","heart"],["settings","Settings","settings"]];
+var NAV=[["home","Home","layout-dashboard"],["vocabulary","Vocabulary","book-open"],["categories","Categories","layout-grid"],["practice","Practice","layers"],["quiz","Quiz","list-checks"],["exam","Exam Prep","target"],["progress","My Progress","trending-up"],["favorites","Favorites","heart"],["settings","Settings","settings"]];
 var QTYPES=[["mc","Multiple Choice","See a word, pick its Thai meaning","circle-help"],["th2en","Thai to English","See a Thai meaning, pick the English word","languages"],["fill","Fill in the Blank","Complete the sentence with the right word","pencil"],["match","Word Matching","Pair English words with Thai meanings","link"],["listen","Listening","Hear a word, pick what you heard","volume-2"]];
 
 /* ---------------------------------------------------------------------
@@ -396,7 +405,7 @@ function pad(n){return n<10?"0"+n:""+n}
 function ymd(d){d=d||new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function reduced(){try{return matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){return false}}
 var KEY="wordverse.v1";
-function defData(){return {learned:{},fav:{},quiz:[],act:{},days:{},hist:[],recent:[],set:{name:"Learner",goal:5,accent:"en-US",rate:1,collapsed:false,slots:true}}}
+function defData(){return {learned:{},fav:{},quiz:[],act:{},days:{},hist:[],recent:[],ex:{track:"toeic",done:{},scores:{},drafts:{},mocks:[],place:null,date:"",miss:{}},set:{name:"Learner",goal:5,accent:"en-US",rate:1,collapsed:false,slots:true}}}
 function loadData(){
   var d=defData();
   try{var t=localStorage.getItem(KEY); if(t){var p=JSON.parse(t); Object.keys(d).forEach(function(k){if(p[k]!==undefined)d[k]=(k==="set")?Object.assign(d.set,p.set):p[k]})}}catch(e){}
@@ -521,6 +530,10 @@ function catCard(i){
    Pages
    --------------------------------------------------------------------- */
 var pages={};
+function examMini(){
+  var tr=X().track, nx=nextUp(tr), pct=trackPct(tr), nm=tr==="toeic"?"TOEIC":"IELTS";
+  return '<section class="card" style="border-left:4px solid var(--vio)"><div class="row" style="justify-content:space-between;flex-wrap:wrap"><div style="min-width:220px;flex:1"><div class="lbl">Exam prep · '+nm+'</div><h3 style="margin:6px 0">'+(nx?esc(nx.u.title)+' · '+STEP_LBL[nx.s]:'Path complete. Try the timed mock!')+'</h3>'+bar(pct)+'<p class="small muted" style="margin-top:6px">'+pct+'% of the '+nm+' path</p></div><div class="row">'+(nx?'<button class="btn" data-a="x-open" data-u="'+nx.u.id+'" data-s="'+nx.s+'">Continue</button>':'')+'<button class="btn ghost" data-a="go" data-p="exam">Open Exam Prep</button></div></div></section>';
+}
 pages.home=function(){
   var d=S.d, tl=todayLearned(), g=d.set.goal, pct=Math.min(100,Math.round(tl/g*100)), st=streak(), dw=dailyWord();
   var now=new Date(), dow=(now.getDay()+6)%7, mon=new Date(now); mon.setDate(now.getDate()-dow);
@@ -537,6 +550,7 @@ pages.home=function(){
    '<div class="card"><div class="lbl">Learning streak</div><div class="row" style="margin:10px 0 0"><span class="fire" style="display:grid">'+ic("flame")+'</span><span class="big">'+st+'</span><span class="muted">day'+(st===1?"":"s")+'</span></div><div class="wk" aria-label="This week">'+wk+'</div></div>'+
    '<div class="card dw"><div class="lbl">Daily word</div><div class="row" style="justify-content:space-between;flex-wrap:nowrap;margin-top:8px"><div style="min-width:0"><div class="w" style="overflow-wrap:anywhere">'+esc(dw.w)+'</div><div class="ipa small">'+esc(dw.ipa)+' · '+esc(dw.pos)+'</div></div><div class="row" style="flex-wrap:nowrap;gap:4px">'+audioBtn(dw.w)+favBtn(dw.id)+'</div></div><div style="font-weight:700;color:var(--mint);margin-top:6px">'+esc(dw.th)+'</div><p class="small muted" style="margin-top:6px;font-style:italic">“'+esc(dw.ex)+'”</p></div>'+
   '</section>'+
+  examMini()+
   '<section><div class="sech"><h2>Continue learning</h2></div><div class="g3">'+cont+'</div></section>'+
   '<section><div class="sech"><h2>Recommended categories</h2><button class="btn sm ghost" data-a="go" data-p="categories">All categories</button></div>'+(recom?'<div class="g4">'+recom+'</div>':'<div class="card muted">You have learned every word. Try a quiz to keep it fresh!</div>')+'</section>'+
   '</div>';
@@ -670,6 +684,12 @@ function finishQuiz(){
 }
 
 /* ----- Progress ----- */
+function examProg(){
+  var h='<div class="card"><div class="lbl">Exam prep</div><div class="g2" style="margin-top:10px">';
+  ["toeic","ielts"].forEach(function(tr){var pct=trackPct(tr), ms=X().mocks.filter(function(m){return m.k===tr}), best=ms.length?Math.max.apply(null,ms.map(function(m){return Math.round(m.s/m.n*100)})):null;
+    h+='<div><div class="row small" style="justify-content:space-between"><b>'+(tr==="toeic"?"TOEIC":"IELTS")+' path</b><span class="muted">'+pct+'%</span></div>'+bar(pct)+'<p class="small muted" style="margin-top:6px">Mock attempts: '+ms.length+(best!==null?' · best '+best+'%':'')+'</p></div>'});
+  return h+'</div></div>';
+}
 pages.progress=function(){
   var tot=WORDS.length, lc=learnedCount(), st=streak(), lv=level();
   var days=[]; for(var i=6;i>=0;i--){var d=new Date(); d.setDate(d.getDate()-i); days.push({k:ymd(d),l:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()],n:S.d.act[ymd(d)]||0})}
@@ -677,11 +697,11 @@ pages.progress=function(){
   var wkb='<div class="bars">'+days.map(function(x){return '<div><span class="col" style="height:'+Math.max(3,Math.round(x.n/mx*100))+'%"><span>'+(x.n||"")+'</span></span><small>'+x.l+'</small></div>'}).join("")+'</div>';
   var qs=S.d.quiz.slice(-8), qb=qs.length?'<div class="bars">'+qs.map(function(q){var p=Math.round(q.s/q.n*100);return '<div><span class="col" style="height:'+Math.max(3,p)+'%;background:linear-gradient(180deg,var(--mint),var(--blue))"><span>'+p+'</span></span><small>'+esc(new Date(q.at).toLocaleDateString(undefined,{day:"numeric",month:"short"}))+'</small></div>'}).join("")+'</div>':'<p class="muted">No quiz scores yet. Take a quiz to see your trend.</p>';
   var ch=CATS.map(function(c,i){var p=catProg(i+1);return '<div style="padding:8px 0"><div class="row small" style="justify-content:space-between;flex-wrap:nowrap"><span>'+pad(i+1)+' '+esc(c[0])+'</span><span class="muted">'+p.l+'/'+p.t+'</span></div>'+bar(p.p)+'</div>'}).join("");
-  var hist=S.d.hist.length?S.d.hist.slice(0,10).map(function(h){return '<div class="prow">'+ic(h.t==="quiz"?"list-checks":"circle-check")+'<div style="min-width:0"><b>'+(h.t==="quiz"?"Quiz":"Learned")+'</b> <span class="muted">'+esc(h.l)+'</span></div><span class="muted small" style="margin-left:auto;white-space:nowrap">'+esc(new Date(h.at).toLocaleDateString(undefined,{day:"numeric",month:"short"}))+'</span></div>'}).join(""):'<p class="muted">Your learning history will appear here.</p>';
+  var hist=S.d.hist.length?S.d.hist.slice(0,10).map(function(h){return '<div class="prow">'+ic(h.t==="quiz"?"list-checks":h.t==="exam"?"target":"circle-check")+'<div style="min-width:0"><b>'+(h.t==="quiz"?"Quiz":h.t==="exam"?"Exam":"Learned")+'</b> <span class="muted">'+esc(h.l)+'</span></div><span class="muted small" style="margin-left:auto;white-space:nowrap">'+esc(new Date(h.at).toLocaleDateString(undefined,{day:"numeric",month:"short"}))+'</span></div>'}).join(""):'<p class="muted">Your learning history will appear here.</p>';
   return pageTitle("My Progress","Your learning analytics")+'<div class="gap">'+
    '<section class="card welcome" style="grid-template-columns:1fr 1fr"><div style="align-self:center"><span class="tag">Level '+lv.n+' · '+lv.t+'</span><h2 style="font-size:1.6rem;margin:8px 0">'+lc+' of '+tot+' words learned</h2><p class="muted">Every 5 learned words raises your level.</p><div style="margin-top:14px">'+bar(Math.round(lc/tot*100))+'</div></div>'+slot("achievement","Achievement","hero")+'</section>'+
    '<div class="g4"><div class="card"><div class="lbl">Total vocabulary</div><div class="big" style="margin-top:8px">'+tot+'</div></div><div class="card"><div class="lbl">Words learned</div><div class="big" style="margin-top:8px;color:var(--mint)">'+lc+'</div></div><div class="card"><div class="lbl">Remaining</div><div class="big" style="margin-top:8px">'+(tot-lc)+'</div></div><div class="card"><div class="lbl">Daily streak</div><div class="big" style="margin-top:8px"><span class="fire" style="display:inline-grid;vertical-align:-3px">'+ic("flame")+'</span> '+st+'</div></div></div>'+
-   '<div class="g2"><div class="card"><div class="lbl">Weekly learning activity</div>'+wkb+'</div><div class="card"><div class="lbl">Quiz scores (%)</div>'+qb+'</div></div>'+
+   examProg()+'<div class="g2"><div class="card"><div class="lbl">Weekly learning activity</div>'+wkb+'</div><div class="card"><div class="lbl">Quiz scores (%)</div>'+qb+'</div></div>'+
    '<div class="g2"><div class="card"><div class="lbl">Category progress</div><div style="margin-top:8px">'+ch+'</div></div><div class="card"><div class="lbl">Learning history</div><div style="margin-top:8px">'+hist+'</div></div></div></div>';
 };
 
@@ -752,7 +772,7 @@ function renderChrome(){
    NAV.filter(function(n){return n[0]!=="settings"}).map(function(n){return '<button data-a="go" data-p="'+n[0]+'"'+(S.page===n[0]?' aria-current="page"':'')+' data-tip="'+n[1]+'">'+ic(n[2])+'<span>'+n[1]+'</span>'+(n[0]==="favorites"&&Object.keys(S.d.fav).length?'<span class="cnt">'+Object.keys(S.d.fav).length+'</span>':'')+'</button>'}).join("")+'</nav>'+
    '<div class="foot"><button data-a="go" data-p="settings"'+(S.page==="settings"?' aria-current="page"':'')+'>'+ic("settings")+'<span>Settings</span></button><button class="hide-m" data-a="collapse" aria-label="Collapse sidebar">'+ic("panel-left-close")+'<span>Collapse</span></button></div>';
   $("#side").innerHTML=side;
-  var bn=[["home","Home","layout-dashboard"],["vocabulary","Words","book-open"],["practice","Practice","layers"],["quiz","Quiz","list-checks"],["progress","Progress","trending-up"]];
+  var bn=[["home","Home","layout-dashboard"],["vocabulary","Words","book-open"],["exam","Exam","target"],["quiz","Quiz","list-checks"],["progress","Progress","trending-up"]];
   $("#bnav").innerHTML=bn.map(function(n){return '<button data-a="go" data-p="'+n[0]+'"'+(S.page===n[0]?' aria-current="page"':'')+'>'+ic(n[2])+n[1]+'</button>'}).join("");
   var lv=level(); $("#lvl").innerHTML=ic("trending-up")+'Lv '+lv.n+' · '+lv.t;
   $("#stkn").textContent=streak();
@@ -766,6 +786,7 @@ function render(keepScroll){
   renderChrome(); refreshIcons(); ensureSpline();
 }
 function go(p,keep){
+  if(p==="exam"&&!RUN)UX.unit=null;
   S.page=p; S.notif=false; $("#app").classList.remove("open");
   if(S.busy)return;
   if(reduced()||keep){render(keep); if(!keep)window.scrollTo(0,0); return}
@@ -881,6 +902,720 @@ function matchPick(id){
   render(true);
 }
 
+/* ===================== EXAM CONTENT (original practice material) ===================== */
+var STEPS=["learn","read","listen","write","quiz"];
+var STEP_TH={learn:"เรียนรู้",read:"อ่าน",listen:"ฟัง",write:"เขียน",quiz:"ทดสอบ"};
+var TF=["True","False","Not Given"];
+
+var U=[
+{id:"t1",tr:"toeic",title:"Emails & Office Life",th:"อีเมลและชีวิตในออฟฟิศ",tag:"Part 5–7",
+ learn:{intro:"ข้อสอบ TOEIC มีอีเมล ประกาศ และข้อความในที่ทำงานจำนวนมาก โดยเฉพาะ Part 6–7 บทนี้เริ่มจากศัพท์ที่เจอบ่อยในอีเมลธุรกิจ และไวยากรณ์ Present Simple กับ Present Continuous ที่ออกสอบบ่อย",
+  pts:[["Present Simple: The office opens at 8:30.","ใช้กับกิจวัตร ตารางเวลา และข้อเท็จจริง สัญญาณ: always, usually, every Monday"],
+       ["Present Continuous: We are reviewing your application.","ใช้กับสิ่งที่กำลังทำอยู่ หรือนัดหมายที่ตกลงไว้แล้ว สัญญาณ: right now, currently, at the moment"],
+       ["I am writing to inquire about…","ประโยคเปิดอีเมลสุภาพที่เจอใน Part 6–7 บ่อย"]],
+  vocab:[["attach","แนบ (ไฟล์)","Please attach your resume."],["deadline","กำหนดส่ง","The deadline is Friday."],["confirm","ยืนยัน","Please confirm your attendance."],["reschedule","เลื่อนนัด","We need to reschedule the interview."],["attendee","ผู้เข้าร่วม","Each attendee will receive a badge."],["inquire","สอบถาม","I am writing to inquire about your prices."],["regarding","เกี่ยวกับ","I am writing regarding your order."]],
+  tip:"เทคนิค Part 7: อ่านคำถามก่อน แล้วสแกนหาคำตอบในอีเมล ดูหัวเรื่อง (Subject) วันที่ และชื่อผู้ส่งเป็นอย่างแรก"},
+ read:{title:"Email: Training Session Moved",text:"Subject: Training Session Moved\n\nDear all,\n\nThe product training originally scheduled for Tuesday, 3 June has been moved to Thursday, 5 June at 2:00 p.m. in Meeting Room B. The change is due to a conflict with the quarterly budget review.\n\nPlease confirm your attendance by replying to this email no later than Monday noon. Attendees should bring a laptop and the user guide, which is attached. If you cannot attend, contact Priya in Human Resources to arrange a make-up session.\n\nRegards,\nDaniel Ortiz, Operations",
+  qs:[{q:"Why was the training session moved?",o:["The room is not available.","The trainer is sick.","A budget review is scheduled at the same time.","The user guide is not ready."],a:2,w:"ประโยค 'a conflict with the quarterly budget review' บอกว่าชนกับการประชุมงบประมาณ"},
+      {q:"What must attendees do by Monday noon?",o:["Print the user guide","Reply to confirm attendance","Contact Human Resources","Book Meeting Room B"],a:1,w:"'Please confirm your attendance by replying… no later than Monday noon'"},
+      {q:"Who should be contacted by someone who cannot attend?",o:["Daniel Ortiz","The trainer","Priya","The budget manager"],a:2,w:"'contact Priya in Human Resources to arrange a make-up session'"}]},
+ listen:{lines:[{s:"A",t:"Hello, this is Mara from Greenfield Printing, returning your call about the brochure order. We can deliver five hundred copies by Wednesday. If you need them on Tuesday, there is an extra rush fee of forty dollars. Please call me back at extension two one four before five o'clock today, so I can reserve the printing slot."}],
+  qs:[{q:"Why is the speaker calling?",o:["To cancel an order","To return a call about an order","To ask for a payment","To offer a discount"],a:1,w:"'returning your call about the brochure order'"},
+      {q:"What extra cost applies to Tuesday delivery?",o:["$14","$40","$50","$400"],a:1,w:"'an extra rush fee of forty dollars'"},
+      {q:"What should the listener do before 5 o'clock?",o:["Send the brochure files","Visit the printing shop","Call back to reserve the slot","Pay the rush fee"],a:2,w:"'call me back… before five o'clock today, so I can reserve the printing slot'"}]},
+ write:{prompt:"Write a short email (60–90 words) to a colleague asking to move a meeting from Monday to Wednesday. Give a reason and ask for confirmation.",min:50,
+  tips:["ใส่ Subject ที่บอกเรื่องชัดเจน","ขอสุภาพ: Would it be possible to… / Could we…","บอกเหตุผลสั้นๆ 1 ประโยค","ปิดท้ายด้วย Please confirm… และชื่อผู้เขียน"],
+  model:"Subject: Request to Reschedule Monday's Meeting\n\nDear Ms. Lopez,\n\nI am writing to ask whether we could move our meeting from Monday to Wednesday at 10:00 a.m. I have to visit a client on Monday morning and will not be back in time. Would it be possible to meet on Wednesday instead? Please confirm whether this time works for you. I apologize for the inconvenience.\n\nBest regards,\nAnan"},
+ quiz:[{q:"The manager usually ____ the weekly report on Fridays.",o:["review","reviews","is reviewing","reviewing"],a:1,w:"usually + ประธานเอกพจน์ = Present Simple เติม -s"},
+       {q:"Please ____ the signed form to your reply.",o:["attach","attaching","attached","attachment"],a:0,w:"Please + กริยาช่อง 1"},
+       {q:"I am writing ____ your recent order.",o:["regard","regarding","regards","regarded"],a:1,w:"regarding = เกี่ยวกับ ทำหน้าที่เป็น preposition"},
+       {q:"Right now, our technicians ____ the server.",o:["repair","repairs","are repairing","repaired"],a:2,w:"Right now = กำลังทำ ใช้ Present Continuous"}]},
+
+{id:"t2",tr:"toeic",title:"Meetings & Schedules",th:"การประชุมและตารางงาน",tag:"Part 3–4, 7",
+ learn:{intro:"Part 3 และ 4 เป็นบทสนทนาและประกาศสั้นๆ ที่เล่าเรื่องการประชุม ตารางงาน และการเลื่อนนัด บทนี้ฝึกการพูดถึงอนาคต (will / be going to / Present Continuous) และเทคนิคอ่านคำถามก่อนฟัง",
+  pts:[["will: I'll send the file now.","ใช้กับการตัดสินใจทันที หรือเสนอความช่วยเหลือ"],
+       ["be going to: We are going to launch in May.","ใช้กับแผนที่วางไว้ หรือคาดการณ์จากสิ่งที่เห็น (Look at those clouds. It is going to rain.)"],
+       ["Present Continuous: The client is arriving at 10.","ใช้กับนัดหมายที่ตกลงแน่นอนแล้ว มักมีเวลาหรือวันที่กำกับ"],
+       ["Part 3–4 tip: อ่านคำถามทั้ง 3 ข้อก่อนเสียงเริ่ม","คำตอบมักปรากฏเรียงตามลำดับคำถาม และผู้พูดมักใช้คำพ้องความหมายกับตัวเลือก"]],
+  vocab:[["agenda","วาระการประชุม","Please send me the agenda."],["postpone","เลื่อนไป","The meeting was postponed until Friday."],["minutes","รายงานการประชุม","The minutes will be posted online."],["proposal","ข้อเสนอ","She presented a new proposal."],["approve","อนุมัติ","The director approved the budget."],["supervisor","หัวหน้างาน","Please inform your supervisor."],["available","ว่าง / พร้อมใช้","Is Mr. Chen available at 3:00?"]],
+  tip:"เสียงในข้อสอบอ่านเพียงครั้งเดียว จึงควรขีดคำสำคัญ (ชื่อ เวลา สถานที่ ตัวเลข) ในคำถามไว้ก่อนฟัง"},
+ read:{title:"Notice to Staff: New Meeting Schedule",text:"Notice to Staff\n\nBeginning next month, department meetings will be held every second Wednesday at 9:00 a.m. instead of every Monday. The new schedule allows managers to review sales figures before discussions begin.\n\nEach team leader must send an agenda to the supervisor by the previous Friday. Meeting minutes will be posted on the intranet within two days. Staff members who cannot attend should inform their team leader in advance.",
+  qs:[{q:"What is the purpose of the notice?",o:["To announce a change in meeting schedule","To introduce a new supervisor","To report sales figures","To cancel all meetings"],a:0,w:"หัวข้อหลักคือ meetings จะย้ายจากทุกวันจันทร์เป็นทุกวันพุธที่สอง"},
+      {q:"When must agendas be sent to the supervisor?",o:["On the day of the meeting","On Monday morning","By the previous Friday","Within two days after"],a:2,w:"'send an agenda to the supervisor by the previous Friday'"},
+      {q:"Where will the minutes be posted?",o:["On the intranet","In the cafeteria","By email only","On the supervisor's door"],a:0,w:"'Meeting minutes will be posted on the intranet'"}]},
+ listen:{lines:[{s:"A",t:"Have you seen the agenda for tomorrow's meeting?"},{s:"B",t:"Not yet. Is the budget proposal still on it?"},{s:"A",t:"It was, but Mr. Chen asked to postpone it until next week because the final figures are not ready."},{s:"B",t:"Then I'll prepare the marketing update instead. It only takes ten minutes."},{s:"A",t:"Great. I'll tell the supervisor and update the agenda this afternoon."}],
+  qs:[{q:"What has been postponed?",o:["The marketing update","The budget proposal","The whole meeting","The supervisor's visit"],a:1,w:"Mr. Chen asked to postpone the budget proposal"},
+      {q:"Why was it postponed?",o:["The final figures are not ready.","Mr. Chen is traveling.","The room is booked.","The proposal was rejected."],a:0,w:"'because the final figures are not ready'"},
+      {q:"What will Speaker B do?",o:["Update the agenda","Call Mr. Chen","Prepare a marketing update","Tell the supervisor"],a:2,w:"B: 'I'll prepare the marketing update instead' (A เป็นคนอัปเดต agenda)"}]},
+ write:{prompt:"Write a short notice (60–90 words) announcing that this Friday's team meeting is postponed to next Tuesday at 10:00 a.m. Give the reason and ask staff to reply.",min:50,
+  tips:["เริ่มด้วยข้อมูลสำคัญ: อะไรเปลี่ยน เป็นวันและเวลาใหม่เมื่อไร","ใช้ Passive: has been postponed","ให้เหตุผลหนึ่งประโยค","บอกสิ่งที่ผู้อ่านต้องทำและกำหนดเวลา"],
+  model:"Notice: Team Meeting Postponed\n\nPlease note that this Friday's team meeting has been postponed to next Tuesday at 10:00 a.m. in Meeting Room A. The change is necessary because several managers will attend a client workshop on Friday. The agenda will stay the same. Please reply to this email by Monday to confirm that you can attend. If you cannot, inform your team leader in advance.\n\nThank you for your understanding."},
+ quiz:[{q:"The phone is ringing. I ____ answer it.",o:["will","am going to","have","was"],a:0,w:"ตัดสินใจทันทีตอนพูด ใช้ will"},
+       {q:"Look at those dark clouds. It ____ rain.",o:["will","is going to","rains","rained"],a:1,w:"คาดการณ์จากหลักฐานที่เห็น ใช้ be going to"},
+       {q:"The client ____ at the airport at 6 p.m. tomorrow; her flight is booked.",o:["arrives","is arriving","arrived","has arrived"],a:1,w:"นัดหมายที่ตกลงแล้ว ใช้ Present Continuous"},
+       {q:"The meeting has been ____ until Thursday.",o:["postponed","postponing","postpone","postpones"],a:0,w:"has been + V3 (passive)"}]},
+
+{id:"t3",tr:"toeic",title:"Travel & Orders",th:"การเดินทางและการสั่งซื้อ",tag:"Part 2, 4, 7",
+ learn:{intro:"หัวข้อเดินทาง สั่งของ และคืนสินค้าออกสอบทุกครั้ง บทนี้ฝึกคำบุพบทบอกเวลา (at / on / in / by / until) และกับดักใน Part 2 ที่เสียงคล้ายกัน",
+  pts:[["at 9:00 · on Monday · in March","at = เวลา/จุด, on = วันและวันที่, in = เดือน ปี ช่วงเวลายาว"],
+       ["by Friday vs. until Friday","by = ภายในไม่เกิน (deadline), until = ต่อเนื่องไปจนถึง"],
+       ["Part 2 trap: Where is the copy room? ✗ I'll copy the file.","ตัวเลือกที่ใช้คำหรือเสียงซ้ำกับคำถามมักเป็นตัวหลอก"],
+       ["Indirect answers: Who is in charge of the order? → Ask Ms. Lee in Purchasing.","คำตอบที่ไม่ตอบตรงๆ แต่ชี้ทางไปหาคำตอบ เป็นคำตอบที่ถูกได้บ่อย"]],
+  vocab:[["itinerary","กำหนดการเดินทาง","Your itinerary is attached."],["delay","ล่าช้า","The flight was delayed by two hours."],["refund","คืนเงิน","You will receive a full refund."],["shipment","การจัดส่งสินค้า","The shipment arrives on Monday."],["invoice","ใบแจ้งหนี้","Please pay the invoice within 30 days."],["depart","ออกเดินทาง","The train departs at noon."],["receipt","ใบเสร็จ","Keep your receipt for returns."]],
+  tip:"ใน Part 2 ให้ฟังคำขึ้นต้น (Who / Where / When / Why / How) ให้ชัด เพราะตัวเลือกที่ผิดมักตอบคนละประเภทคำถาม"},
+ read:{title:"Order Confirmation",text:"Thank you for your order #48213.\n\nYour items, two standing desks and one office chair, will ship from our Chicago warehouse on 12 March and should arrive within five business days. A shipping notice with tracking information will be emailed once the package leaves the warehouse.\n\nReturns are accepted within 30 days of delivery, provided the items are in their original packaging. A refund will be issued to the original payment method within seven days after we receive the return.",
+  qs:[{q:"When will the items be shipped?",o:["10 March","12 March","17 March","30 March"],a:1,w:"'will ship… on 12 March' (5 วันทำการคือเวลาที่ของจะมาถึง)"},
+      {q:"How will the customer receive tracking information?",o:["By phone call","On the website only","By email","With the package"],a:2,w:"'A shipping notice with tracking information will be emailed'"},
+      {q:"What is required for a return?",o:["A receipt from the store","Original packaging","A phone call first","Payment by credit card"],a:1,w:"'provided the items are in their original packaging'"}]},
+ listen:{lines:[{s:"A",t:"Attention passengers on Flight five oh eight to Singapore. Due to heavy fog, departure has been delayed by approximately two hours. The new departure time is six forty-five p.m. from Gate fourteen. Passengers may collect a meal voucher at the airline counter. We apologize for the inconvenience."}],
+  qs:[{q:"Why has the flight been delayed?",o:["A technical problem","Bad weather","A crew shortage","Heavy traffic"],a:1,w:"'Due to heavy fog' = สภาพอากาศ"},
+      {q:"What is the new departure time?",o:["4:45 p.m.","6:14 p.m.","6:45 p.m.","8:45 p.m."],a:2,w:"'The new departure time is six forty-five p.m.'"},
+      {q:"How can passengers get a meal?",o:["Order on the plane","Collect a voucher at the counter","Go to Gate 14","Call the airline"],a:1,w:"'collect a meal voucher at the airline counter'"}]},
+ write:{prompt:"Write a short email (60–90 words) to a hotel asking to change your reservation from 10 June to 12 June. Ask whether the price will change and what the cancellation policy is.",min:50,
+  tips:["บอกชื่อและเลขยืนยันการจอง","ระบุวันที่เดิมและวันที่ใหม่ให้ชัด","ถามสองเรื่อง: ราคา และเงื่อนไขการยกเลิก","ขอคำตอบภายในเวลาที่กำหนด"],
+  model:"Subject: Change of Reservation\n\nDear Reservations Team,\n\nI have a booking under the name Suda Chai, confirmation number 55231, for 10 June. I would like to change my arrival date to 12 June, with the same room type for two nights. Could you please let me know whether the price will change and what the cancellation policy is? I would appreciate a reply by Friday.\n\nThank you for your help.\n\nSuda Chai"},
+ quiz:[{q:"The store opens ____ 9:00 a.m.",o:["at","on","in","by"],a:0,w:"เวลาเฉพาะเจาะจงใช้ at"},
+       {q:"Our flight leaves ____ Tuesday morning.",o:["at","on","in","for"],a:1,w:"วันในสัปดาห์ (รวม Tuesday morning) ใช้ on"},
+       {q:"Please submit the receipt ____ Friday at the latest.",o:["by","until","since","during"],a:0,w:"at the latest = ไม่เกิน ใช้ by"},
+       {q:"\"Where can I pick up my boarding pass?\"",o:["At the check-in counter on the second floor.","About two hundred dollars.","Yes, it was a long pass.","Before the weekend."],a:0,w:"Where ต้องตอบเป็นสถานที่ ตัวเลือกอื่นตอบคนละประเภทหรือใช้เสียงซ้ำ"}]},
+
+{id:"t4",tr:"toeic",title:"Reports & Business Growth",th:"รายงานและการเติบโตทางธุรกิจ",tag:"Part 5–7",
+ learn:{intro:"Part 5 ทดสอบไวยากรณ์ในประโยคเดียว ข้อที่ออกบ่อยคือรูปคำ (word form) บทนี้สอนดูตำแหน่งของคำในประโยค พร้อมคำศัพท์จากรายงานธุรกิจ และการเปรียบเทียบ",
+  pts:[["a significant increase (noun) · sales increase (verb)","หลัง a/the + adjective ต้องเป็นคำนามเสมอ"],
+       ["Sales rose sharply.","adverb (-ly) ขยายกริยา adjective หรือ adverb อื่น"],
+       ["-tion / -ment / -ness → noun · -ive / -ful / -al → adjective · -ize / -ify → verb","ดูคำลงท้ายเพื่อเดาหน้าที่ของคำ"],
+       ["more profitable than · the highest in the region","คำยาวใช้ more/most, คำสั้นเติม -er/-est"]],
+  vocab:[["revenue","รายได้","Revenue rose by eight percent."],["decline","ลดลง","Profits declined in the second quarter."],["forecast","คาดการณ์","The forecast is positive."],["expand","ขยาย","We plan to expand into Asia."],["competitor","คู่แข่ง","Our main competitor lowered prices."],["quarter","ไตรมาส","The third quarter ends in September."],["margin","อัตรากำไร","Shipping costs reduced our margin."]],
+  tip:"ข้อ word form: ตัดสินก่อนว่าช่องว่างต้องการ noun, verb, adjective หรือ adverb แล้วค่อยดูตัวเลือก โดยไม่ต้องรู้ความหมายทั้งประโยค"},
+ read:{title:"Quarterly Report Summary",text:"Quarterly Report Summary\n\nRevenue for the third quarter rose 8 percent compared with the same period last year, reaching $2.4 million. The increase was driven mainly by online sales, which grew twice as fast as in-store sales.\n\nHowever, shipping costs also climbed, reducing overall profit margins slightly. Management forecasts moderate growth in the fourth quarter and plans to expand the customer service team to handle higher order volumes.",
+  qs:[{q:"What mainly caused the increase in revenue?",o:["Lower prices","Growth in online sales","New stores","A larger customer service team"],a:1,w:"'driven mainly by online sales'"},
+      {q:"What negative trend does the report mention?",o:["Falling revenue","Fewer online orders","Higher shipping costs","Lower in-store sales"],a:2,w:"'shipping costs also climbed, reducing… profit margins'"},
+      {q:"What does management plan to do?",o:["Close a store","Expand the customer service team","Reduce online sales","Raise shipping prices"],a:1,w:"'plans to expand the customer service team'"}]},
+ listen:{lines:[{s:"A",t:"Good morning, everyone. Before we begin, I'd like to share some good news. Our Osaka branch exceeded its sales target by twelve percent this quarter, the best result in the company. To celebrate, lunch will be provided in the cafeteria on Friday at noon. Please also remember to submit your expense reports by the end of this week."}],
+  qs:[{q:"What is the good news?",o:["A new branch will open.","The Osaka branch beat its target.","Salaries will increase.","A manager is retiring."],a:1,w:"'Osaka branch exceeded its sales target by twelve percent'"},
+      {q:"What will happen on Friday?",o:["A sales meeting","Staff will receive bonuses","Lunch will be provided","The cafeteria will close"],a:2,w:"'lunch will be provided in the cafeteria on Friday at noon'"},
+      {q:"What are listeners reminded to do?",o:["Submit expense reports","Visit the Osaka branch","Sign up for lunch","Update their schedules"],a:0,w:"'remember to submit your expense reports'"}]},
+ write:{prompt:"Write a short report summary (70–100 words). Facts: sales increased by 10% in Q2; costs rose by 3%; you recommend hiring two more staff.",min:50,
+  tips:["เริ่มด้วยผลลัพธ์หลักพร้อมตัวเลข","ใช้ However เพื่อเชื่อมข้อมูลที่ตรงข้าม","ใช้ adverb บอกระดับ: slightly, sharply","จบด้วยข้อเสนอ: I recommend…"],
+  model:"Subject: Q2 Sales Summary\n\nSales increased by 10 percent in the second quarter, reaching a record level for the year. However, costs also rose by 3 percent, mainly because of higher shipping fees. Overall, profit improved slightly. Based on these results, I recommend hiring two additional staff members to handle the growing number of orders and to maintain our delivery times."},
+ quiz:[{q:"The company reported a significant ____ in profits.",o:["increase","increasingly","increased","increase to"],a:0,w:"หลัง a significant ต้องเป็น noun"},
+       {q:"Sales rose ____ last quarter.",o:["sharp","sharply","sharpness","sharpen"],a:1,w:"ขยายกริยา rose ใช้ adverb"},
+       {q:"This model is ____ than the previous one.",o:["more efficient","most efficient","efficiently","as efficient"],a:0,w:"มี than จึงเป็น comparative: more efficient"},
+       {q:"Our new branch is the ____ in the region.",o:["large","larger","largest","more large"],a:2,w:"มี the + in the region เป็น superlative: largest"}]},
+
+{id:"i1",tr:"ielts",title:"Reading: True / False / Not Given",th:"อ่าน: ข้อสอบ T/F/NG และการฟังกรอกแบบฟอร์ม",tag:"Reading + Listening S1",
+ learn:{intro:"IELTS Reading ใช้เวลา 60 นาที มี 3 บทความ รวม 40 ข้อ ข้อ True / False / Not Given เป็นรูปแบบที่ผู้เรียนพลาดบ่อยที่สุด เพราะต้องแยก 'ขัดแย้ง' ออกจาก 'ไม่มีข้อมูล' บทนี้ยังฝึกฟังกรอกแบบฟอร์ม (Listening Section 1) ซึ่งเต็มไปด้วยตัวเลขและการสะกดชื่อ",
+  pts:[["True = ข้อความตรงกับบทความ","บทความยืนยันตรงๆ หรือบอกเป็นคำพ้องความหมาย"],
+       ["False = ข้อความขัดแย้งกับบทความ","บทความบอกตรงข้าม เช่น inside vs. outside"],
+       ["Not Given = บทความไม่พูดถึง","ห้ามใช้ความรู้ส่วนตัวตัดสิน ถ้าหาหลักฐานในบทความไม่ได้ ให้เลือก Not Given"],
+       ["ระวังคำจำกัด: all, only, never, always, some","ข้อความที่เปลี่ยนคำเหล่านี้จากบทความมักเป็น False หรือ Not Given"]],
+  vocab:[["skim","กวาดอ่านเร็วเพื่อจับใจความ","Skim the passage first."],["scan","กวาดหาคำเฉพาะ","Scan for numbers and names."],["paraphrase","เรียบเรียงใหม่","Questions often paraphrase the text."],["synonym","คำพ้องความหมาย","'rise' is a synonym of 'increase'."],["contradict","ขัดแย้ง","The text contradicts the statement."],["qualifier","คำจำกัดขอบเขต","'Only' is a qualifier."],["evidence","หลักฐาน","Find evidence in the text."]],
+  tip:"IELTS Reading: ไม่มีเวลาเพิ่มสำหรับลอกคำตอบ ต้องเขียนลงใบคำตอบภายใน 60 นาที จึงควรฝึกจับเวลาเป็นประจำ ส่วน Listening: เสียงเล่นครั้งเดียว และสะกดผิดถือว่าผิด"},
+ read:{title:"The Honeybee Dance",text:"Honeybees communicate the location of food through a movement known as the waggle dance. A forager that has found a rich source of nectar returns to the hive and moves in a figure-eight pattern on the vertical surface of the comb. The angle of the straight central run, measured against the vertical, shows the direction of the food relative to the sun, while the length of the run signals distance.\n\nResearchers first described this system in the 1940s. Since then, experiments have shown that bees can adjust the dance when the sun is hidden by clouds, although accuracy tends to fall. The dance is performed inside a dark hive, so other bees follow it by touch and by detecting vibrations rather than by sight.",
+  qs:[{q:"The waggle dance is performed outside the hive.",o:TF,a:1,w:"False: บทความบอกว่า 'performed inside a dark hive' ตรงข้ามกับข้อความ"},
+      {q:"The length of the central run shows how far away the food is.",o:TF,a:0,w:"True: 'the length of the run signals distance' (signals = shows)"},
+      {q:"Younger bees perform the dance more accurately than older bees.",o:TF,a:2,w:"Not Given: บทความไม่ได้พูดถึงอายุของผึ้งเลย"}]},
+ listen:{lines:[{s:"A",t:"Good morning, Riverside Language Centre. How can I help you?"},{s:"B",t:"Hello, I would like to enrol in the evening English course."},{s:"A",t:"Certainly. Could I have your surname, please?"},{s:"B",t:"Yes, it's Phongsri. That's P H O N G S R I."},{s:"A",t:"Thank you. And a contact number?"},{s:"B",t:"It's zero seven eight four, five five two, nine one six."},{s:"A",t:"Lovely. The course starts on the fourteenth of October. It runs on Tuesdays and Thursdays, from six thirty to eight thirty in the evening."},{s:"B",t:"And how much is the fee?"},{s:"A",t:"It's two hundred and eighty pounds, including all materials. Last year it was two hundred and fifty, but prices went up in September."},{s:"B",t:"That's fine. Thank you."}],
+  qs:[{q:"When does the course start?",o:["4 October","14 October","18 October","24 October"],a:1,w:"'the fourteenth of October' ฟังให้ชัดระหว่าง fourteenth กับ fortieth"},
+      {q:"On which days does the course run?",o:["Mondays and Wednesdays","Tuesdays and Thursdays","Wednesdays and Fridays","Saturdays and Sundays"],a:1,w:"'Tuesdays and Thursdays'"},
+      {q:"What is the course fee?",o:["£250","£208","£280","£218"],a:2,w:"£280 คือราคาปัจจุบัน ส่วน £250 เป็นราคาปีที่แล้ว (ตัวหลอก)"}]},
+ write:{prompt:"Summarise the honeybee passage in 50–70 words, using your own words (paraphrase; do not copy whole phrases).",min:40,
+  tips:["เปลี่ยนคำ: communicate → tell, location → where, distance → how far","เปลี่ยนโครงสร้างประโยค ไม่ใช่แค่เปลี่ยนคำ","ครอบคลุม 3 ประเด็น: ทิศทาง ระยะทาง และวิธีที่ผึ้งตัวอื่นรับรู้","ไม่ใส่ความเห็นส่วนตัว"],
+  model:"Honeybees tell nest-mates where food is by performing a waggle dance inside the hive. The direction of the central run, compared with vertical, points to the food relative to the sun, and the duration of that run shows how far away it is. When clouds hide the sun, bees can still adjust their dance, although they are less accurate. Because the hive is dark, other bees follow the dance mainly through touch and vibration."},
+ quiz:[{q:"A statement contradicts the passage. The answer is:",o:["True","False","Not Given","Cannot tell"],a:1,w:"ขัดแย้งกับบทความ = False"},
+       {q:"You cannot find any information about the statement in the passage. The answer is:",o:["True","False","Not Given","Guess from your own knowledge"],a:2,w:"ไม่มีข้อมูลในบทความ = Not Given ห้ามใช้ความรู้ส่วนตัว"},
+       {q:"In IELTS Listening, how many times is each recording played?",o:["Once","Twice","Three times","As many times as you want"],a:0,w:"เปิดครั้งเดียว จึงต้องอ่านคำถามล่วงหน้า"},
+       {q:"The passage says 'some bees'. The statement says 'all bees'. This is most likely:",o:["True","False or Not Given","Always True","Always Not Given"],a:1,w:"การเปลี่ยน some เป็น all เกินกว่าที่บทความบอก จึงมักเป็น False หรือ Not Given"}]},
+
+{id:"i2",tr:"ielts",title:"Writing Task 1: Describing Charts",th:"เขียน Task 1: อธิบายกราฟและตาราง",tag:"Academic Writing",
+ learn:{intro:"Writing Task 1 (Academic) ให้เวลาประมาณ 20 นาที เขียนอย่างน้อย 150 คำ อธิบายข้อมูลจากกราฟ ตาราง หรือแผนภาพ โดยไม่ใส่ความเห็นส่วนตัว โครงสร้างที่ปลอดภัยคือ 4 ย่อหน้า",
+  pts:[["Intro: paraphrase คำสั่งข้อสอบ","The graph shows… → The line graph illustrates…"],
+       ["Overview: บอกแนวโน้มหลัก 1–2 ข้อ ไม่ใส่ตัวเลข","Overall, … rose, whereas … fell."],
+       ["Body 1–2: จัดกลุ่มข้อมูล เปรียบเทียบด้วยตัวเลขสำคัญ","เลือกจุดเด่น ไม่ต้องใส่ทุกตัวเลข"],
+       ["Trend language: rose from 20 to 35 · peaked at · levelled off · fluctuated","เติมระดับการเปลี่ยนแปลง: sharply, steadily, slightly, gradually"]],
+  vocab:[["peak","ถึงจุดสูงสุด","Sales peaked at 50 million."],["plateau","คงที่ในระดับสูง","The figure reached a plateau."],["fluctuate","ขึ้นลงไม่คงที่","Prices fluctuated during the year."],["proportion","สัดส่วน","The proportion of users doubled."],["approximately","ประมาณ","Approximately 40 percent agreed."],["whereas","ในขณะที่ (เปรียบเทียบ)","Cars rose, whereas buses fell."],["overall","โดยภาพรวม","Overall, usage increased."]],
+  tip:"ผู้ตรวจดูสี่ด้านเท่ากัน: Task Achievement, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy ย่อหน้า Overview ที่หายไปทำให้คะแนนด้านแรกลดลงมาก"},
+ read:{title:"Model Answer: Internet Access",text:"The line graph shows the percentage of households in Country X with internet access between 2000 and 2020.\n\nOverall, internet access rose dramatically over the period, and by 2020 almost every household was connected.\n\nIn 2000, only 10 percent of households had access. This figure climbed steadily to 45 percent in 2008 and then rose more sharply, reaching 80 percent in 2014. After that, growth slowed, and the proportion levelled off at around 96 percent by 2020.",
+  qs:[{q:"What percentage of households had internet access in 2008?",o:["10 percent","45 percent","80 percent","96 percent"],a:1,w:"'climbed steadily to 45 percent in 2008'"},
+      {q:"Which period had the fastest growth?",o:["2000–2008","2008–2014","2014–2020","The growth was equal"],a:1,w:"2008–2014 เพิ่ม 35 จุดใน 6 ปี เร็วกว่า 2000–2008 (35 จุดใน 8 ปี) และ 2014–2020 (16 จุด)"},
+      {q:"What is the function of the sentence starting 'Overall'?",o:["It lists every number","It gives the main trend","It gives the writer's opinion","It repeats the question"],a:1,w:"Overview สรุปแนวโน้มหลัก ไม่มีรายละเอียดตัวเลขและไม่มีความเห็น"}]},
+ listen:{lines:[{s:"A",t:"Today I'd like to talk about cycling in our city. Over the last ten years, the number of people who cycle to work every day has doubled, from about eight thousand to sixteen thousand. The main reason is the network of protected bike lanes that was completed in twenty nineteen. However, cycling still accounts for only five percent of all commuting trips, compared with sixty percent by car."}],
+  qs:[{q:"How many people now cycle to work every day?",o:["About 8,000","About 16,000","About 60,000","About 5,000"],a:1,w:"'doubled, from about eight thousand to sixteen thousand'"},
+      {q:"What is the main reason for the increase?",o:["Cheaper bicycles","Protected bike lanes","Higher bus fares","A cycling festival"],a:1,w:"'The main reason is the network of protected bike lanes'"},
+      {q:"What percentage of commuting trips are made by bicycle?",o:["5%","16%","60%","20%"],a:0,w:"'only five percent' (60% คือการเดินทางด้วยรถยนต์)"}]},
+ write:{prompt:"The table shows the average hours per week spent on social media in a country.\n\nWrite a Task 1 report of at least 100 words (in the real test, 150 words) comparing the two groups.",
+  data:"Hours per week\n               2010   2015   2020\nTeenagers        4      9     14\nAdults over 40   2      3      5",min:90,
+  tips:["Intro: paraphrase 'The table shows… → The table compares…'","Overview: ทั้งสองกลุ่มเพิ่มขึ้น แต่วัยรุ่นเพิ่มมากกว่า","Body 1: ปี 2010 และ 2015   Body 2: ปี 2020 และช่องว่างที่กว้างขึ้น","ใช้ whereas / while เปรียบเทียบสองกลุ่ม"],
+  model:"The table compares the average number of hours per week that teenagers and adults over 40 spent on social media in 2010, 2015 and 2020.\n\nOverall, time spent on social media rose for both groups, but the increase was far greater among teenagers.\n\nIn 2010, teenagers spent 4 hours a week online, which was double the figure for older adults (2 hours). By 2015, the teenage figure had more than doubled to 9 hours, whereas adults over 40 rose only slightly, to 3 hours.\n\nThe gap widened further by 2020. Teenagers reached 14 hours, the highest figure in the table, while adults over 40 recorded 5 hours, still well below the teenage level."},
+ quiz:[{q:"Sales ____ from 20 to 35 million between 2010 and 2015.",o:["rose","raised","arose","rises"],a:0,w:"rose (intransitive) ไม่มี object ส่วน raise ต้องมี object"},
+       {q:"Which sentence is an overview?",o:["In 2010, sales were 20 million.","Overall, sales grew steadily over the period.","I think sales are too low.","Sales were 35 million in 2015."],a:1,w:"Overview บอกแนวโน้มรวม ไม่ใส่ตัวเลขเฉพาะปีและไม่ใส่ความเห็น"},
+       {q:"Which verb describes going up and down repeatedly?",o:["peak","plateau","fluctuate","collapse"],a:2,w:"fluctuate = ขึ้นลงไม่คงที่"},
+       {q:"In Task 1 you should NOT:",o:["Paraphrase the question","Give an overview","Compare key figures","Give your personal opinion"],a:3,w:"Task 1 รายงานข้อมูลเท่านั้น ไม่ใส่ความเห็นส่วนตัว"}]},
+
+{id:"i3",tr:"ielts",title:"Writing Task 2: Opinion Essays",th:"เขียน Task 2: เรียงความแสดงความเห็น",tag:"Writing (60% of score)",
+ learn:{intro:"Task 2 ใช้เวลาประมาณ 40 นาที เขียนอย่างน้อย 250 คำ และมีน้ำหนักคะแนนมากกว่า Task 1 ต้องตอบคำถามให้ครบทุกส่วนและมีจุดยืนที่ชัดตลอดบทความ",
+  pts:[["Intro: paraphrase หัวข้อ + บอกจุดยืน (thesis)","Some people believe… In my opinion, …"],
+       ["Body paragraph ใช้โครงสร้าง PEEL","Point (ประเด็น) → Explain (อธิบาย) → Example (ตัวอย่าง) → Link (โยงกลับไปที่คำถาม)"],
+       ["คำเชื่อม: Firstly · Moreover · However · Therefore · For instance","ใช้ให้หลากหลาย อย่าใช้ also หรือ and ซ้ำทุกประโยค"],
+       ["To what extent do you agree? → ต้องมีความเห็นชัดตลอดบทความ","ถ้าเห็นด้วยบางส่วน ให้บอกส่วนที่เห็นด้วยและไม่เห็นด้วยให้ชัด"]],
+  vocab:[["advantage","ข้อดี","A key advantage is lower cost."],["drawback","ข้อเสีย","One drawback is the time required."],["society","สังคม","Technology has changed society."],["benefit","ผลประโยชน์","Exercise has many benefits."],["impact","ผลกระทบ","The impact on children is serious."],["ensure","ทำให้แน่ใจ","Schools must ensure safety."],["essential","จำเป็นอย่างยิ่ง","Sleep is essential for learning."]],
+  tip:"วางแผน 5 นาทีก่อนเขียน: จุดยืน ประเด็นหลัก 2 ข้อ และตัวอย่างอย่างละหนึ่ง จะช่วยให้เขียนครบ 250 คำโดยไม่หลงประเด็น"},
+ read:{title:"Model Answer: Free University Education",text:"Some people believe that university education should be free for all students. I partly agree with this view.\n\nOn the one hand, free tuition would give talented students from poor families an equal chance to succeed. For instance, in countries such as Germany, public universities charge very low fees, and many graduates enter skilled professions regardless of background.\n\nOn the other hand, completely free education places a heavy burden on taxpayers, who may not all benefit directly. Therefore, a better solution would be low fees combined with grants for students in need.",
+  qs:[{q:"What is the writer's position?",o:["Strongly agrees","Partly agrees","Strongly disagrees","Has no opinion"],a:1,w:"'I partly agree with this view'"},
+      {q:"Which phrase introduces an example?",o:["On the other hand","Therefore","For instance","Regardless"],a:2,w:"For instance = ยกตัวอย่าง"},
+      {q:"What solution does the writer propose?",o:["Free education for everyone","Higher fees for all","Low fees plus grants for students in need","Closing public universities"],a:2,w:"'low fees combined with grants for students in need'"}]},
+ listen:{lines:[{s:"A",t:"So, Maya, how is your essay on remote working going?"},{s:"B",t:"I've finished the introduction, but my second paragraph feels weak."},{s:"A",t:"What's the problem?"},{s:"B",t:"I make a point about productivity, but I don't give any example."},{s:"A",t:"Then add a specific one, for instance a study or a company case. Also, check your linking words. You use 'also' in almost every sentence."},{s:"B",t:"OK, I'll vary them and send the revised draft by Thursday."}],
+  qs:[{q:"What is the problem with Maya's second paragraph?",o:["It is too long","It has no example","It has no introduction","It is off topic"],a:1,w:"'I make a point… but I don't give any example'"},
+      {q:"Which linking word does Maya use too often?",o:["However","Therefore","Also","For instance"],a:2,w:"'You use also in almost every sentence'"},
+      {q:"When will Maya send the revised draft?",o:["Tuesday","Wednesday","Thursday","Friday"],a:2,w:"'send the revised draft by Thursday'"}]},
+ write:{prompt:"Some people think children should start learning a foreign language at primary school. Others believe it is better to start at secondary school.\n\nDiscuss both views and give your own opinion. (Practice: at least 120 words. In the real test: 250 words.)",min:120,
+  tips:["Intro: paraphrase + บอกจุดยืนของคุณ","Body 1: มุมมองของฝ่ายที่ให้เริ่มทีหลัง   Body 2: มุมมองที่คุณเห็นด้วยพร้อมตัวอย่าง","ใช้ PEEL ในแต่ละย่อหน้า","Conclusion: สรุปจุดยืนด้วยคำพูดใหม่ ไม่เพิ่มประเด็นใหม่"],
+  model:"People disagree about when children should begin learning a foreign language. While some argue that primary school is the best starting point, others prefer to wait until secondary school. In my opinion, an early start is more beneficial, provided that lessons are well designed.\n\nSupporters of starting later say that young children already have to master reading, writing and mathematics in their own language. Adding another subject could overload them. Moreover, secondary schools usually have specialist teachers.\n\nHowever, I believe the advantages of an early start are greater. Children imitate sounds easily, so they develop better pronunciation. For instance, many pupils in Scandinavian countries begin English at age seven and become confident speakers by their teens.\n\nIn conclusion, although a later start has some merits, I support teaching languages in primary school, using games and songs rather than heavy grammar."},
+ quiz:[{q:"What is the minimum word count for IELTS Writing Task 2?",o:["150","200","250","300"],a:2,w:"Task 2 ต้องการอย่างน้อย 250 คำ (Task 1 คือ 150 คำ)"},
+       {q:"Choose the best word: Cars are convenient; ____, they cause pollution.",o:["moreover","however","therefore","for instance"],a:1,w:"ประโยคหลังขัดแย้งกับประโยคแรก ใช้ however"},
+       {q:"Which is the strongest thesis sentence for 'Is technology making people lonelier?'",o:["Technology is everywhere.","I will talk about technology.","I believe technology increases loneliness because it replaces face-to-face contact.","Many people like phones."],a:2,w:"Thesis ที่ดีมีจุดยืนและเหตุผลหลัก"},
+       {q:"In the PEEL structure, what does the last step 'L' do?",o:["Lists new ideas","Links the paragraph back to the question","Leaves the topic","Lowers the argument"],a:1,w:"Link = โยงกลับไปตอบคำถามของโจทย์"}]},
+
+{id:"i4",tr:"ielts",title:"Listening & Speaking Strategies",th:"กลยุทธ์ฟังและพูด",tag:"Listening + Speaking",
+ learn:{intro:"IELTS Listening มี 4 ส่วน รวม 40 ข้อ ใช้เวลาราว 30 นาที เสียงเล่นครั้งเดียว ส่วน Speaking เป็นการสัมภาษณ์ 11–14 นาที แบ่งเป็น 3 ส่วน บทนี้รวมกลยุทธ์ที่ใช้ได้ทันที",
+  pts:[["Listening: อ่านคำถามล่วงหน้าและขีดคำสำคัญ","คำตอบเรียงตามลำดับคำถามเสมอ"],
+       ["ระวังตัวหลอก: 'at two… sorry, three o'clock'","ผู้พูดมักแก้ไขข้อมูล ให้เลือกคำตอบสุดท้ายที่ผู้พูดยืนยัน"],
+       ["Speaking Part 1: ตอบสั้นๆ แต่ขยายด้วยเหตุผล","Yes, I do. I usually cook at weekends because it helps me relax."],
+       ["Speaking Part 2: เตรียม 1 นาที พูด 1–2 นาที","จดเป็นคำสำคัญ 4–5 คำ ไม่เขียนเป็นประโยคเต็ม"]],
+  vocab:[["distractor","ตัวหลอก","The speaker corrects herself, which is a distractor."],["paraphrase","พูดอีกแบบ","Paraphrase when you forget a word."],["fluency","ความคล่องแคล่ว","Fluency means smooth speech."],["hesitate","ลังเล หยุดคิด","Do not hesitate for too long."],["elaborate","อธิบายขยายความ","Please elaborate on your answer."],["cue card","บัตรหัวข้อใน Part 2","Read the cue card carefully."],["pronunciation","การออกเสียง","Clear pronunciation is important."]],
+  tip:"ฝึกพูดแล้วอัดเสียงตัวเอง เปิดฟังเพื่อจับจุดที่ติดขัด และใช้เวลา 1–2 นาทีเป็นเกณฑ์ซ้อม Part 2"},
+ read:{title:"Tips for Fluent Speaking",text:"Fluency does not mean speaking fast. Examiners listen for ideas that flow naturally, with few long pauses. Candidates often lose marks because they try to find the perfect word and stop talking.\n\nA better strategy is to paraphrase: if you forget the word 'ferry', say 'a boat that carries cars across the river'. It also helps to extend short answers with a reason and a short example.\n\nIn Part 2, use the one minute of preparation to note four or five key words rather than full sentences, because reading complete sentences sounds unnatural.",
+  qs:[{q:"According to the passage, what does fluency mean?",o:["Speaking very fast","Ideas flowing naturally with few long pauses","Using difficult words","Never making mistakes"],a:1,w:"'Fluency does not mean speaking fast. Examiners listen for ideas that flow naturally'"},
+      {q:"What should you do if you forget a word?",o:["Stop and wait","Say it in your own language","Paraphrase it","Skip the question"],a:2,w:"'A better strategy is to paraphrase'"},
+      {q:"How should you make notes in the Part 2 preparation minute?",o:["Write full sentences","Write key words","Draw pictures only","Do not write anything"],a:1,w:"'note four or five key words rather than full sentences'"}]},
+ listen:{lines:[{s:"A",t:"Welcome to the Harbour Museum. The museum opens at nine thirty, not ten as printed on the old leaflet. Today's guided tour begins in the main hall, then moves to the maritime gallery on the second floor. Photography is allowed everywhere except the textile room. The cafe is closed for repairs, but there are vending machines near the entrance. The tour will finish at twelve fifteen."}],
+  qs:[{q:"What time does the museum open?",o:["9:00","9:30","10:00","10:30"],a:1,w:"'opens at nine thirty, not ten' 10:00 คือข้อมูลเก่าในแผ่นพับ (ตัวหลอก)"},
+      {q:"Where is photography NOT allowed?",o:["The main hall","The maritime gallery","The textile room","The entrance"],a:2,w:"'allowed everywhere except the textile room'"},
+      {q:"When will the tour finish?",o:["12:00","12:15","12:30","1:15"],a:1,w:"'The tour will finish at twelve fifteen'"}]},
+ write:{prompt:"Speaking Part 2 practice. Describe a place you enjoy visiting. You should say: where it is, how often you go there, what you do there, and explain why you enjoy it.\n\nWrite what you would say (80–120 words). Then read it aloud and time yourself: aim for 1–2 minutes.",min:70,
+  tips:["เรียงตามหัวข้อบนการ์ด: where, how often, what, why","ใช้คำเชื่อมพูด: The reason is that… / Also, …","เติมรายละเอียดจากประสาทสัมผัส: เห็น ได้ยิน รู้สึกอย่างไร","อ่านออกเสียงแล้วจับเวลา ถ้าไม่ถึง 1 นาทีให้เพิ่มตัวอย่าง"],
+  model:"I'd like to talk about a small park near my house in Chiang Mai. It is about ten minutes away on foot, and I go there two or three times a week, usually in the early evening. Mostly I walk around the lake, and sometimes I meet friends to chat or read a book on a bench. The reason I enjoy it so much is that it feels peaceful even though it is in the middle of the city. After a long day of study, it helps me clear my head. Also, the trees give plenty of shade, so it stays pleasant even in the hot season."},
+ quiz:[{q:"The speaker says: 'The meeting is at two… sorry, three o'clock.' The correct answer is:",o:["Two o'clock","Three o'clock","Two thirty","Five o'clock"],a:1,w:"ผู้พูดแก้ไขข้อมูล ให้เลือกคำตอบสุดท้าย"},
+       {q:"In Speaking Part 2, how long should you speak?",o:["Under 30 seconds","About 1–2 minutes","5 minutes","Exactly 10 minutes"],a:1,w:"Part 2 ให้พูดต่อเนื่อง 1–2 นาที หลังเตรียม 1 นาที"},
+       {q:"Which is the better answer to 'Do you like cooking?'",o:["Yes.","Yes, I do. I usually cook at weekends because it helps me relax.","No comment.","I don't know."],a:1,w:"ขยายคำตอบด้วยเหตุผลและตัวอย่างสั้นๆ"},
+       {q:"What should you do when you forget a word in the Speaking test?",o:["Stay silent","Paraphrase it in English","Ask the examiner to translate","Change the topic"],a:1,w:"Paraphrase ช่วยให้พูดต่อเนื่อง และยังแสดงทักษะด้านคำศัพท์"}]}
+];
+
+/* ---------- Foundation units (original material, level A1 to B1) ---------- */
+var B=[
+{id:"b1",tr:"base",title:"Be, Have & Present Simple",th:"กริยาพื้นฐานและกิจวัตรประจำวัน",tag:"ระดับ A1",
+ learn:{intro:"เริ่มจากกริยาที่ใช้บ่อยที่สุด คือ am/is/are, have/has และ Present Simple ใช้เล่าเรื่องตัวเอง กิจวัตร และข้อเท็จจริง ทุกบทที่เหลือต่อยอดจากบทนี้",
+  pts:[["I am a student. She is a nurse. They are teachers.","be: I ใช้ am, he/she/it ใช้ is, you/we/they ใช้ are ปฏิเสธเติม not: She is not (isn't) late."],
+       ["I work. She works.","Present Simple: ประธาน he/she/it เติม -s หรือ -es ที่กริยา (go → goes, study → studies)"],
+       ["Do you work here? Does he work here?","คำถามใช้ do/does นำหน้า และกริยากลับเป็นรูปเดิม (Does he work…? ไม่ใช่ Does he works…?)"],
+       ["I have a car. She has a car.","have ใช้กับ I/you/we/they ส่วน has ใช้กับ he/she/it"]],
+  vocab:[["usually","ปกติ","I usually wake up at six."],["every day","ทุกวัน","She studies English every day."],["often","บ่อยๆ","They often eat out."],["never","ไม่เคย","He never drinks coffee."],["colleague","เพื่อนร่วมงาน","My colleague is friendly."],["schedule","ตารางเวลา","My schedule is busy."]],
+  tip:"จำสูตร: he/she/it + กริยาเติม s ในประโยคบอกเล่า แต่ถ้ามี does หรือ doesn't แล้ว กริยากลับเป็นรูปเดิม"},
+ read:{title:"My Morning",text:"My name is Nina. I am a nurse at a small hospital. I usually wake up at six o'clock and I have breakfast at home. My husband works in a bank, so he leaves the house at seven. Our son goes to school by bus. I start work at eight and I finish at four. In the evening, we eat dinner together and I study English for thirty minutes.",
+  qs:[{q:"What is Nina's job?",o:["Teacher","Nurse","Bank clerk","Student"],a:1,w:"'I am a nurse at a small hospital'"},
+      {q:"How does Nina's son go to school?",o:["On foot","By car","By bus","By train"],a:2,w:"'Our son goes to school by bus'"},
+      {q:"What does Nina do for thirty minutes in the evening?",o:["Works at the hospital","Studies English","Goes to the bank","Takes the bus"],a:1,w:"'I study English for thirty minutes'"}]},
+ listen:{lines:[{s:"A",t:"Hi, my name is Tom. I work in an office in Bangkok. I start at nine o'clock and finish at five thirty. I usually have lunch with my colleagues at twelve. On Saturdays, I don't work. I play football with my friends."}],
+  qs:[{q:"What time does Tom start work?",o:["8:00","9:00","9:30","5:30"],a:1,w:"'I start at nine o'clock'"},
+      {q:"Who does Tom usually have lunch with?",o:["His family","His friends","His colleagues","Nobody"],a:2,w:"'lunch with my colleagues'"},
+      {q:"What does Tom do on Saturdays?",o:["Works in the office","Plays football","Has lunch at twelve","Studies English"],a:1,w:"'On Saturdays, I don't work. I play football'"}]},
+ write:{prompt:"Write 5 to 6 sentences about your daily routine. Use Present Simple: I wake up…, I go to…, I usually…",min:30,
+  tips:["ใช้ I + กริยารูปเดิม","ใส่คำบอกความถี่: usually, often, never","ใช้ and และ then เชื่อมประโยค","ถ้าเล่าถึงคนอื่น ตรวจว่า he/she/it เติม s"],
+  model:"I wake up at six o'clock every day. I take a shower and have breakfast with my family. Then I go to work by bus. I usually start work at eight and finish at five. In the evening I cook dinner and watch TV. I go to bed at ten."},
+ quiz:[{q:"She ____ a teacher.",o:["am","is","are","be"],a:1,w:"she ใช้ is"},
+       {q:"My brother ____ in a bank.",o:["work","works","working","is work"],a:1,w:"he/she/it ในประโยคบอกเล่า เติม s"},
+       {q:"____ he speak English?",o:["Do","Does","Is","Has"],a:1,w:"คำถามกับ he ใช้ Does"},
+       {q:"We ____ a big house.",o:["has","have","haves","is have"],a:1,w:"we ใช้ have"}]},
+
+{id:"b2",tr:"base",title:"Past Simple & Time Words",th:"เล่าเหตุการณ์ที่ผ่านมา",tag:"ระดับ A2",
+ learn:{intro:"Past Simple ใช้เล่าเหตุการณ์ที่จบไปแล้ว มักมีคำบอกเวลา เช่น yesterday, last week, two days ago เป็นทักษะหลักของ IELTS Speaking Part 1 และ Part 2",
+  pts:[["I worked. She visited. They played.","กริยาปกติเติม -ed (study → studied, stop → stopped)"],
+       ["go → went · have → had · see → saw · buy → bought","กริยาไม่ปกติต้องจำ ที่เจอบ่อยควรท่องเป็นชุด"],
+       ["Did you go? I didn't go.","คำถามและปฏิเสธใช้ did/didn't + กริยารูปเดิม (ไม่ใช่ didn't went)"],
+       ["yesterday · last night · two days ago · in 2020","คำบอกเวลาที่ส่งสัญญาณว่าต้องใช้ Past Simple"]],
+  vocab:[["yesterday","เมื่อวาน","I met her yesterday."],["ago","ที่แล้ว (นับย้อนหลัง)","He left two hours ago."],["last week","สัปดาห์ที่แล้ว","We moved last week."],["travel","เดินทาง","She travelled to Japan."],["arrive","มาถึง","The train arrived late."],["decide","ตัดสินใจ","I decided to study abroad."]],
+  tip:"ในประโยคที่มี did แล้ว กริยากลับเป็นรูปเดิมเสมอ: Did she go? ไม่ใช่ Did she went?"},
+ read:{title:"A Weekend in Chiang Mai",text:"Last weekend, Ploy travelled to Chiang Mai with two friends. They left Bangkok on Friday evening and arrived at the hotel at midnight. On Saturday they visited a temple and bought some handmade bags at the night market. It rained on Sunday morning, so they stayed in a cafe and played cards. They went home by train and got back at ten o'clock on Sunday night.",
+  qs:[{q:"When did they arrive at the hotel?",o:["Friday evening","At midnight","Saturday morning","Sunday night"],a:1,w:"'arrived at the hotel at midnight'"},
+      {q:"What did they buy at the night market?",o:["Food","Cards","Handmade bags","Train tickets"],a:2,w:"'bought some handmade bags'"},
+      {q:"Why did they stay in a cafe on Sunday?",o:["It rained.","They were tired.","The temple was closed.","They missed the train."],a:0,w:"'It rained on Sunday morning, so they stayed in a cafe'"}]},
+ listen:{lines:[{s:"A",t:"How was your holiday, Ben?"},{s:"B",t:"It was great. We went to Phuket for five days."},{s:"A",t:"Did you swim in the sea?"},{s:"B",t:"Yes, every morning. But on the last day we had a problem. We missed our flight because the taxi arrived late."},{s:"A",t:"Oh no! What did you do?"},{s:"B",t:"We bought new tickets and flew home the next day."}],
+  qs:[{q:"How long was Ben's holiday?",o:["3 days","5 days","7 days","10 days"],a:1,w:"'for five days'"},
+      {q:"Why did they miss the flight?",o:["They woke up late.","The taxi was late.","The airport was closed.","They lost their tickets."],a:1,w:"'because the taxi arrived late'"},
+      {q:"When did they fly home?",o:["The same day","The next day","Two days later","A week later"],a:1,w:"'flew home the next day'"}]},
+ write:{prompt:"Write 5 to 6 sentences about what you did last weekend. Use Past Simple and time words such as on Saturday, in the evening, after that.",min:30,
+  tips:["ใช้กริยาช่อง 2 ทุกประโยค","เรียงเหตุการณ์ด้วย first, then, after that","ใช้ didn't สำหรับสิ่งที่ไม่ได้ทำ","เพิ่มความรู้สึก: It was fun. I was tired."],
+  model:"Last weekend I visited my grandmother in Nonthaburi. On Saturday morning I took a bus there, and we cooked lunch together. After that, we watched a movie. In the evening I went to a market and bought some fruit. On Sunday I didn't go out because it rained. I was tired, but I had a lovely weekend."},
+ quiz:[{q:"I ____ to the market yesterday.",o:["go","goes","went","going"],a:2,w:"yesterday ใช้ Past Simple: went"},
+       {q:"She ____ her keys last night.",o:["lose","lost","losed","loses"],a:1,w:"lose เป็นกริยาไม่ปกติ: lost"},
+       {q:"Did you ____ the report?",o:["finish","finished","finishing","finishes"],a:0,w:"หลัง did ใช้กริยารูปเดิม"},
+       {q:"We arrived two hours ____.",o:["before","ago","last","yesterday"],a:1,w:"two hours ago = สองชั่วโมงที่แล้ว"}]},
+
+{id:"b3",tr:"base",title:"Future, Modals & Requests",th:"แผนในอนาคต การขอร้อง และให้คำแนะนำ",tag:"ระดับ A2",
+ learn:{intro:"บทนี้ใช้พูดถึงแผนในอนาคต ขอร้อง ให้คำแนะนำ และถามอย่างสุภาพ พบมากในข้อสอบ TOEIC Part 2–4 และ IELTS Speaking",
+  pts:[["I will call you later. I'm going to study abroad.","will = ตัดสินใจตอนนั้นหรือสัญญา · be going to = แผนที่วางไว้แล้ว"],
+       ["Can I…? Could I…? May I…?","Can = ขอทั่วไป · Could = สุภาพขึ้น · May = ทางการ"],
+       ["should / must / have to","should = ควร (แนะนำ) · must / have to = ต้อง (ข้อบังคับ)"],
+       ["Would you mind opening the window?","ขอร้องสุภาพ ตอบรับได้ว่า Not at all. หรือ Sure."]],
+  vocab:[["appointment","นัดหมาย","I have a doctor's appointment."],["suggest","เสนอแนะ","I suggest we meet at noon."],["polite","สุภาพ","Please be polite to customers."],["permission","การอนุญาต","You need permission to enter."],["plan","แผน","What are your plans for July?"],["promise","สัญญา","I promise I will be on time."]],
+  tip:"หลัง modal (can, could, should, must, will) ใช้กริยารูปเดิมเสมอ ไม่เติม s และไม่มี to: She can swim ถูก, She can swims ผิด"},
+ read:{title:"A Message from the Manager",text:"Hi team. Next Monday we are going to move to the new office on Rose Street. You should pack your own desk by Friday, and you must not leave any documents on the shelves. Boxes will be delivered on Wednesday. If you need extra boxes, please ask Mina. Could everyone check their email on Thursday? I will send the new floor plan then. Thank you, Paul",
+  qs:[{q:"When will the team move?",o:["This Friday","Next Monday","Next Thursday","On Wednesday"],a:1,w:"'Next Monday we are going to move'"},
+      {q:"What must staff NOT do?",o:["Ask for boxes","Pack their desk","Leave documents on the shelves","Check email"],a:2,w:"'you must not leave any documents on the shelves'"},
+      {q:"When will Paul send the floor plan?",o:["Wednesday","Thursday","Friday","Monday"],a:1,w:"'check their email on Thursday… I will send the new floor plan then'"}]},
+ listen:{lines:[{s:"A",t:"Excuse me, could I ask something? I'd like to join the English club."},{s:"B",t:"Of course. You can sign up at the front desk. The club meets every Wednesday at six."},{s:"A",t:"Do I have to pay?"},{s:"B",t:"No, it's free, but you should bring your student card the first time."},{s:"A",t:"Great. I'll go to the desk now."}],
+  qs:[{q:"How often does the club meet?",o:["Every day","Every Wednesday","Every weekend","Once a month"],a:1,w:"'every Wednesday at six'"},
+      {q:"How much does it cost?",o:["Nothing","100 baht","A small fee","200 baht"],a:0,w:"'it's free'"},
+      {q:"What should the student bring the first time?",o:["A pen","Money","A student card","A laptop"],a:2,w:"'you should bring your student card'"}]},
+ write:{prompt:"Write 5 to 6 sentences about your plans for next month and one polite request to a colleague or teacher. Use will, be going to and could.",min:30,
+  tips:["แผนที่วางไว้: I'm going to…","ขอร้อง: Could you…, please?","ตัดสินใจหรือสัญญา: I will…","หลัง modal ใช้กริยารูปเดิม"],
+  model:"Next month I'm going to start a new English course. I will study for one hour every evening, and I'm going to take a practice test at the end of the month. I'm also going to visit my cousin in Rayong. I think I will take a bus because it's cheaper. Could you lend me your grammar book, please? I promise I will return it next week."},
+ quiz:[{q:"____ I borrow your pen, please?",o:["Could","Do","Am","Must to"],a:0,w:"ขออนุญาตอย่างสุภาพใช้ Could I…?"},
+       {q:"You ____ wear a helmet. It's the law.",o:["can","must","may","would"],a:1,w:"กฎหมายบังคับ ใช้ must"},
+       {q:"She can ____ three languages.",o:["speaks","speak","speaking","to speak"],a:1,w:"หลัง can ใช้กริยารูปเดิม"},
+       {q:"Look at the sky. It ____ rain soon.",o:["will","is going to","is","can"],a:1,w:"คาดการณ์จากสิ่งที่เห็น ใช้ be going to"}]},
+
+{id:"b4",tr:"base",title:"Nouns, Articles & Quantity",th:"a/an/the นามนับได้และนับไม่ได้",tag:"ระดับ A2",
+ learn:{intro:"ภาษาไทยไม่มีรูปพหูพจน์และไม่มี a/an/the ผู้เรียนไทยจึงพลาดเรื่องนี้บ่อยในข้อเขียน Part 5 ของ TOEIC และ Writing ของ IELTS",
+  pts:[["a book · an apple · the sun","a/an ใช้กับนามนับได้เอกพจน์ที่ยังไม่เจาะจง · the ใช้เมื่อผู้ฟังรู้ว่าหมายถึงอะไร"],
+       ["two books · three boxes · children · people","พหูพจน์เติม -s/-es และมีคำพิเศษ เช่น man → men, child → children"],
+       ["water · money · information · advice","นามนับไม่ได้ ไม่เติม s และไม่ใช้ a/an: some information ถูก, an information ผิด"],
+       ["many · much · a lot of · a few · a little","many + นามนับได้พหูพจน์ · much + นามนับไม่ได้ · a few + นับได้ · a little + นับไม่ได้"]],
+  vocab:[["furniture","เฟอร์นิเจอร์ (นับไม่ได้)","We bought some furniture."],["information","ข้อมูล (นับไม่ได้)","I need more information."],["advice","คำแนะนำ (นับไม่ได้)","She gave me good advice."],["luggage","สัมภาระ (นับไม่ได้)","My luggage is heavy."],["equipment","อุปกรณ์ (นับไม่ได้)","The equipment is new."],["amount","ปริมาณ","The amount of work is huge."]],
+  tip:"คำที่คนไทยพลาดบ่อย: information, advice, furniture, luggage, equipment, news เป็นนามนับไม่ได้ ไม่เติม s"},
+ read:{title:"Our New Flat",text:"Last month, Mali and her sister rented a small flat near the station. There is one bedroom, a kitchen and a bathroom. They don't have much furniture yet, only a bed, a table and two chairs. Mali says they need some more equipment for the kitchen, such as a rice cooker and a few plates. The landlord gave them useful advice about local shops. He said the market sells a lot of cheap vegetables.",
+  qs:[{q:"How many bedrooms does the flat have?",o:["None","One","Two","Three"],a:1,w:"'There is one bedroom'"},
+      {q:"What furniture do they already have?",o:["A sofa and a TV","A bed, a table and two chairs","A rice cooker and plates","Nothing"],a:1,w:"'only a bed, a table and two chairs'"},
+      {q:"What did the landlord give them?",o:["Furniture","Advice about local shops","A rice cooker","Vegetables"],a:1,w:"'gave them useful advice about local shops'"}]},
+ listen:{lines:[{s:"A",t:"Hello, I'd like some information about the English course."},{s:"B",t:"Sure. We have a lot of students this year, but there are a few places left."},{s:"A",t:"How much homework is there?"},{s:"B",t:"Not much, only a little each night."},{s:"A",t:"And is there any equipment I need?"},{s:"B",t:"Just a notebook and a dictionary. We provide the textbooks."}],
+  qs:[{q:"What does the speaker ask for?",o:["A dictionary","Information about a course","A notebook","A teacher"],a:1,w:"'I'd like some information about the English course'"},
+      {q:"How many places are left?",o:["A lot","A few","None","Many"],a:1,w:"'there are a few places left'"},
+      {q:"What must students bring?",o:["A textbook and a notebook","A notebook and a dictionary","A laptop","Only a dictionary"],a:1,w:"'Just a notebook and a dictionary. We provide the textbooks.'"}]},
+ write:{prompt:"Describe your room or home in 5 to 6 sentences. Use a/an/the, some/any, and at least one of: a lot of, a few, a little.",min:30,
+  tips:["ใช้ There is… กับนามเอกพจน์ และ There are… กับพหูพจน์","ใช้ a/an เมื่อพูดถึงสิ่งนั้นครั้งแรก แล้วใช้ the เมื่อพูดซ้ำ","ตรวจว่าไม่เติม s กับ furniture, information, advice","ลองใช้ a few หรือ a little อย่างน้อย 1 ครั้ง"],
+  model:"I live in a small apartment near the river. There is a bedroom, a bathroom and a kitchen. I have a bed, a desk and a lot of books. There isn't much furniture, but I like it. I have a few plants on the balcony, and they need a little more light. The best thing is the view of the river."},
+ quiz:[{q:"She gave me some good ____.",o:["advice","advices","an advice","advicies"],a:0,w:"advice นับไม่ได้ ไม่เติม s"},
+       {q:"I need ____ umbrella. It's raining.",o:["a","an","the","some"],a:1,w:"umbrella ขึ้นต้นด้วยเสียงสระ ใช้ an"},
+       {q:"There are too ____ cars on the road.",o:["much","many","a little","an"],a:1,w:"cars นับได้พหูพจน์ ใช้ many"},
+       {q:"Two ____ are waiting outside.",o:["child","childs","children","childrens"],a:2,w:"พหูพจน์ของ child คือ children"}]},
+
+{id:"b5",tr:"base",title:"Present Perfect & Comparisons",th:"ประสบการณ์ for/since และการเปรียบเทียบ",tag:"ระดับ B1",
+ learn:{intro:"Present Perfect เชื่อมอดีตกับปัจจุบัน ใช้บอกประสบการณ์ ระยะเวลาที่ยังต่อเนื่อง และผลที่ยังเห็นอยู่ ส่วนการเปรียบเทียบใช้ทั้งใน Speaking และ Writing Task 1",
+  pts:[["I have lived here for five years. She has finished.","have/has + กริยาช่อง 3 · for + ช่วงเวลา · since + จุดเริ่มต้น"],
+       ["Have you ever been to Japan? Yes, I have.","ถามประสบการณ์ด้วย ever · never = ไม่เคย · already, yet, just"],
+       ["Past Simple หรือ Present Perfect?","ระบุเวลาในอดีตชัดเจน (yesterday, in 2020) ใช้ Past Simple · ไม่ระบุเวลา เน้นผลหรือประสบการณ์ ใช้ Present Perfect"],
+       ["taller than · the tallest · more expensive than · as cheap as","คำสั้นเติม -er/-est · คำยาวใช้ more/most · เท่ากันใช้ as…as"]],
+  vocab:[["experience","ประสบการณ์","I have a lot of experience."],["already","เรียบร้อยแล้ว","I have already sent it."],["yet","ยัง (ในคำถามหรือปฏิเสธ)","Have you finished yet?"],["since","ตั้งแต่","I've worked here since 2022."],["compare","เปรียบเทียบ","Compare the two prices."],["expensive","แพง","This laptop is more expensive."]],
+  tip:"since + จุดเวลา (since 2020, since Monday) · for + ช่วงเวลา (for two years, for a week) จำคู่นี้ให้แม่น เพราะออกสอบบ่อยมาก"},
+ read:{title:"Two Phones",text:"Kim has used her old phone for four years. It is cheap, but the battery is weak. Last week she compared two new phones. Model A is cheaper than Model B, and its battery is as good as the old one. Model B is the most expensive in the shop, but it has the best camera. Kim hasn't decided yet. She has already asked three friends for advice, and she has read many reviews online.",
+  qs:[{q:"How long has Kim used her old phone?",o:["Two years","Four years","Since last week","One month"],a:1,w:"'has used her old phone for four years'"},
+      {q:"Which phone has the best camera?",o:["The old phone","Model A","Model B","All of them"],a:2,w:"'Model B… has the best camera'"},
+      {q:"What is true about Kim now?",o:["She bought Model A.","She hasn't decided yet.","She sold her old phone.","She has asked nobody."],a:1,w:"'Kim hasn't decided yet'"}]},
+ listen:{lines:[{s:"A",t:"Have you ever been to Chiang Rai?"},{s:"B",t:"Yes, I have. I went there twice. The first time was in 2019 and the second was last year."},{s:"A",t:"Which trip was better?"},{s:"B",t:"The second one. The weather was cooler and the hotel was much cheaper than the first. I've wanted to go back ever since."}],
+  qs:[{q:"How many times has B been to Chiang Rai?",o:["Once","Twice","Three times","Never"],a:1,w:"'I went there twice'"},
+      {q:"Why was the second trip better?",o:["Cooler weather and a cheaper hotel","A longer trip","A better camera","More friends"],a:0,w:"'The weather was cooler and the hotel was much cheaper'"},
+      {q:"What does B want to do?",o:["Never go back","Go back","Move there","Sell the hotel"],a:1,w:"'I've wanted to go back ever since'"}]},
+ write:{prompt:"Write 5 to 6 sentences about your experience with English or a place you have visited. Use have/has + past participle, for or since, and at least one comparison.",min:35,
+  tips:["ใช้ for หรือ since ให้ถูกคู่กับช่วงเวลา","ใช้ never หรือ ever บอกประสบการณ์","เปรียบเทียบอย่างน้อยหนึ่งประโยค: better than, more … than","ถ้าระบุปีหรือวันที่ ให้เปลี่ยนเป็น Past Simple"],
+  model:"I have studied English for six years, since I was twelve. I have never lived abroad, but I have visited Singapore twice. Singapore is cleaner than my city and the public transport is easier to use. I haven't taken an official test yet, but I have already booked one for March. My writing is better than my speaking, so I am practising more every day."},
+ quiz:[{q:"I ____ here since 2021.",o:["live","lived","have lived","am living"],a:2,w:"since + จุดเวลา ใช้ Present Perfect"},
+       {q:"She has worked here ____ three years.",o:["since","for","ago","from"],a:1,w:"three years เป็นช่วงเวลา ใช้ for"},
+       {q:"This is the ____ film I have ever seen.",o:["good","better","best","most good"],a:2,w:"superlative ของ good คือ best"},
+       {q:"Have you ____ been to London?",o:["ever","yet","already","ago"],a:0,w:"ถามประสบการณ์ใช้ ever"}]},
+
+{id:"b6",tr:"base",title:"Linking Words & Sentence Building",th:"เชื่อมประโยคและขยายความ",tag:"ระดับ B1",
+ learn:{intro:"ประโยคสั้นๆ ซ้ำๆ ทำให้คะแนนเขียนไม่ขึ้น บทนี้สอนเชื่อมประโยคด้วยคำสันธาน และขยายความด้วย who, which, that ซึ่งเป็นสะพานไปสู่ IELTS Writing และ TOEIC Part 6–7",
+  pts:[["and · but · so · because · or","and = เพิ่ม · but = ขัดแย้ง · so = ผลลัพธ์ · because = เหตุผล"],
+       ["although · however · therefore","Although + ประโยค: Although it rained, we went out. · However และ Therefore มักขึ้นต้นประโยคใหม่"],
+       ["who · which · that","who = คน · which = สิ่งของ · that = ได้ทั้งสอง: The man who called you is my boss."],
+       ["If + Present Simple, will + กริยารูปเดิม","If it rains, we will stay home. ใช้กับเงื่อนไขที่เป็นไปได้"]],
+  vocab:[["although","แม้ว่า","Although he was tired, he kept working."],["however","อย่างไรก็ตาม","However, the price is high."],["therefore","ดังนั้น","Therefore, we need a plan."],["as a result","ผลก็คือ","As a result, sales fell."],["in addition","นอกจากนี้","In addition, the room is cheap."],["whereas","ในขณะที่","He likes tea, whereas I prefer coffee."]],
+  tip:"ใช้คำเชื่อมให้หลากหลายแต่อย่าเยอะเกินไป 1 ถึง 2 คำต่อย่อหน้าก็พอ และห้ามใช้ because กับ so ในประโยคเดียวกัน"},
+ read:{title:"Studying Online or in a Classroom",text:"Many people think online courses are better because they save time. However, some learners prefer classrooms, which give them a teacher they can ask directly. Although online lessons are cheaper, students who study alone often lose motivation. Therefore, many schools now offer a mix of both. If you choose a mixed course, you will study some lessons at home and attend others in person.",
+  qs:[{q:"Why do many people prefer online courses?",o:["They save time.","They are free.","They have more teachers.","They are shorter."],a:0,w:"'online courses are better because they save time'"},
+      {q:"What do students who study alone often lose?",o:["Money","Motivation","Time","Their teacher"],a:1,w:"'often lose motivation'"},
+      {q:"What do many schools offer now?",o:["Only online lessons","Only classrooms","A mix of both","Free books"],a:2,w:"'many schools now offer a mix of both'"}]},
+ listen:{lines:[{s:"A",t:"I'm thinking about changing jobs. The salary is higher, but the office is far from my home."},{s:"B",t:"If you take the job, you'll need to leave earlier every morning."},{s:"A",t:"That's true. Although I like my team, I want a new challenge. Therefore, I'm going to apply this week."},{s:"B",t:"Good luck! I hope you get the job."}],
+  qs:[{q:"What is the good point of the new job?",o:["A higher salary","A closer office","A better team","Shorter hours"],a:0,w:"'The salary is higher'"},
+      {q:"What is the problem with the new job?",o:["The salary is low","The office is far","The team is bad","The hours are long"],a:1,w:"'the office is far from my home'"},
+      {q:"What will A do this week?",o:["Quit immediately","Apply for the job","Move house","Ask for a raise"],a:1,w:"'I'm going to apply this week'"}]},
+ write:{prompt:"Write a short paragraph (6 to 8 sentences) about the advantages and disadvantages of living in a big city. Use at least four linking words such as because, but, however, although, so, therefore.",min:45,
+  tips:["ฝั่งข้อดีใช้ On the one hand, ข้อเสียใช้ However,","ใช้ although หรือ whereas เปรียบเทียบสองด้าน","ประโยคสุดท้ายสรุปด้วย Therefore, I think…","อ่านออกเสียงเพื่อเช็กว่าไม่ซ้ำคำเชื่อมเดิม"],
+  model:"Living in a big city has both advantages and disadvantages. On the one hand, there are many jobs, so people can earn more money. In addition, public transport is usually better, which makes travel easier. However, housing is expensive, and the air is often polluted. Although the city is exciting, it can be noisy and stressful. Therefore, I think it is a good choice for young people, whereas families may prefer a quieter place."},
+ quiz:[{q:"I was tired, ____ I went to bed early.",o:["so","but","although","or"],a:0,w:"so บอกผลลัพธ์"},
+       {q:"____ it was raining, we played football.",o:["Because","So","Although","Therefore"],a:2,w:"แม้ว่าฝนตกก็ยังเล่น ใช้ Although"},
+       {q:"The woman ____ lives next door is a doctor.",o:["which","who","what","whose is"],a:1,w:"อ้างถึงคน ใช้ who"},
+       {q:"If she ____ late, we will start without her.",o:["is","will be","was","be"],a:0,w:"if clause ใช้ Present Simple"}]}
+];
+U=U.concat(B);
+/* ---------- Extra grammar units (original material, B1 to B2) ---------- */
+var B2=[
+{id:"b7",tr:"base",title:"Past Continuous & Past Perfect",th:"เล่าเรื่องในอดีตให้ละเอียดขึ้น",tag:"ระดับ B1–B2",
+ learn:{intro:"สองกาลนี้ใช้เล่าเรื่องในอดีตให้ละเอียดขึ้น Past Continuous บอกสิ่งที่กำลังเกิดอยู่ในช่วงเวลาหนึ่ง ส่วน Past Perfect บอกเหตุการณ์ที่เกิดก่อนอีกเหตุการณ์ในอดีต พบมากใน IELTS Speaking Part 2 และบทอ่านเล่าเรื่อง",
+  pts:[["I was cooking when the phone rang.","Past Continuous = was/were + V-ing บอกเหตุการณ์ที่กำลังดำเนินอยู่ แล้วมีเหตุการณ์สั้นๆ (Past Simple) แทรกเข้ามา"],
+       ["While she was studying, her brother was playing games.","while ใช้กับสองเหตุการณ์ที่เกิดพร้อมกัน ส่วน when มักตามด้วยเหตุการณ์สั้นที่แทรก"],
+       ["When I arrived, the meeting had already started.","Past Perfect = had + V3 บอกว่าเหตุการณ์นั้นเกิดก่อนอีกเหตุการณ์ในอดีต"],
+       ["after · before · by the time · already · just","คำที่มักใช้ร่วมกับ Past Perfect เพื่อบอกลำดับเวลา"]],
+  vocab:[["meanwhile","ในขณะเดียวกัน","Meanwhile, the team was preparing the room."],["suddenly","ทันใดนั้น","Suddenly, the lights went out."],["by the time","เมื่อถึงเวลาที่","By the time we arrived, it had started."],["earlier","ก่อนหน้านี้","I had spoken to him earlier."],["interrupt","ขัดจังหวะ","Sorry to interrupt you."],["witness","เป็นพยาน / เห็นเหตุการณ์","She witnessed the accident."]],
+  tip:"ถ้ามีสองเหตุการณ์ในอดีต เหตุการณ์ที่เกิดก่อนใช้ Past Perfect เหตุการณ์ที่เกิดทีหลังใช้ Past Simple แต่ถ้าเล่าเรียงตามลำดับเวลาอยู่แล้ว ใช้ Past Simple ทั้งหมดก็พอ"},
+ read:{title:"The Missed Train",text:"Last Friday, Lena was walking to the station when she realised she had left her ticket at home. By the time she got back, the train had already left. While she was waiting for the next one, she called her manager to say she would be late. He was having a meeting, so he did not answer. Lena was feeling worried, but when she finally arrived at the office, the meeting had just finished and nobody had noticed.",
+  qs:[{q:"What was Lena doing when she realised her mistake?",o:["Waiting for a train","Walking to the station","Calling her manager","Sitting in a meeting"],a:1,w:"'Lena was walking to the station when she realised…'"},
+      {q:"What had happened by the time she got back home?",o:["The meeting had finished","The train had left","Her manager had called","She had lost her phone"],a:1,w:"'By the time she got back, the train had already left'"},
+      {q:"Why did her manager not answer the phone?",o:["He was having a meeting.","His phone was broken.","He was on a train.","He was angry."],a:0,w:"'He was having a meeting, so he did not answer'"}]},
+ listen:{lines:[{s:"A",t:"Why were you late for the party?"},{s:"B",t:"I was driving there when the car broke down. Luckily, a man who was passing by stopped to help."},{s:"A",t:"Had you called a garage?"},{s:"B",t:"Yes, but by the time the mechanic arrived, the man had already fixed it!"},{s:"A",t:"Wow, lucky you!"}],
+  qs:[{q:"What was B doing when the car broke down?",o:["Walking","Driving","Calling a garage","Eating"],a:1,w:"'I was driving there when the car broke down'"},
+      {q:"Who stopped to help?",o:["A mechanic","A friend","A man passing by","A police officer"],a:2,w:"'a man who was passing by stopped to help'"},
+      {q:"What had happened by the time the mechanic arrived?",o:["The car was fixed","The party had ended","B had gone home","The road was closed"],a:0,w:"'the man had already fixed it'"}]},
+ write:{prompt:"Write 6 to 8 sentences about a memorable day in the past, such as a trip or an accident. Use at least two Past Continuous and two Past Perfect sentences.",min:45,
+  tips:["ฉากเหตุการณ์ใช้ Past Continuous: It was raining…","เหตุการณ์ที่แทรกเข้ามาใช้ Past Simple: when the bus stopped…","เหตุการณ์ที่เกิดก่อนใช้ had + V3","ใช้ meanwhile, suddenly, by the time เพิ่มลำดับเวลา"],
+  model:"Last summer I was travelling in the north when something unexpected happened. We were walking up a mountain path when it suddenly started to rain heavily. By the time we reached the village, we were completely wet, and our guide had already phoned the hotel. Meanwhile, the owner was preparing hot soup for us. We had never felt so tired! When we finally got to the hotel, the room had been heated and our clothes were dried by the fire. It was a day I will never forget."},
+ quiz:[{q:"I ____ TV when the lights went out.",o:["watched","was watching","had watched","watch"],a:1,w:"กำลังทำอยู่แล้วมีเหตุการณ์แทรก ใช้ Past Continuous"},
+       {q:"When we arrived at the cinema, the film ____.",o:["already started","has already started","had already started","was already starting"],a:2,w:"หนังเริ่มก่อนที่เราจะมาถึง ใช้ Past Perfect"},
+       {q:"While she ____ dinner, her friends were setting the table.",o:["cooked","was cooking","had cooked","cooks"],a:1,w:"while + สองเหตุการณ์ที่เกิดพร้อมกัน ใช้ Past Continuous ทั้งคู่"},
+       {q:"After she ____ the report, she sent it to her boss.",o:["had finished","finishes","finishing","is finished"],a:0,w:"after + เหตุการณ์ที่เกิดก่อน ใช้ Past Perfect"}]},
+
+{id:"b8",tr:"base",title:"Passive Voice",th:"ประโยคกรรมวาจก",tag:"ระดับ B1–B2",
+ learn:{intro:"Passive Voice เน้นสิ่งที่ถูกกระทำมากกว่าคนทำ พบมากใน TOEIC Part 5–7 (ประกาศ รายงาน) และ IELTS Writing Task 1 ตอนอธิบายขั้นตอนหรือกระบวนการ",
+  pts:[["The report was written by Anna.","โครงสร้าง: be + V3 (+ by คนทำ) โดย be เปลี่ยนตามกาลและประธาน"],
+       ["The office is cleaned every day. The office was cleaned yesterday.","Present ใช้ is/are + V3 · Past ใช้ was/were + V3"],
+       ["will be + V3 · has/have been + V3 · can be + V3","Future, Present Perfect และ Modal ในรูป Passive"],
+       ["My bag was stolen. The paper is cut and then packed.","ใช้ Passive เมื่อไม่รู้หรือไม่สำคัญว่าใครทำ หรือเมื่ออธิบายกระบวนการ"]],
+  vocab:[["process","กระบวนการ","The process takes three days."],["produce","ผลิต","Rice is produced in Thailand."],["install","ติดตั้ง","The software was installed yesterday."],["deliver","ส่งมอบ","Orders are delivered within a week."],["inspect","ตรวจสอบ","Every product is inspected."],["damage","ทำให้เสียหาย","The package was damaged."]],
+  tip:"ข้อสอบ TOEIC Part 5 มักให้เลือกระหว่าง V-ing, V3 และ V1 ถ้าหลัง be เป็นสิ่งของและไม่มี object ตามหลัง ให้นึกถึง Passive (be + V3)"},
+ read:{title:"How Chocolate Is Made",text:"Cocoa beans are grown in tropical countries and are harvested by hand. After the beans have been collected, they are dried in the sun for about a week. Then they are shipped to factories, where they are roasted and ground into a paste. Sugar and milk are added, and the mixture is heated and stirred for several hours. Finally, the chocolate is poured into moulds, cooled and wrapped.",
+  qs:[{q:"How are cocoa beans harvested?",o:["By machine","By hand","By boat","By robots"],a:1,w:"'are harvested by hand'"},
+      {q:"What happens to the beans after they are dried?",o:["They are shipped to factories.","They are poured into moulds.","They are wrapped.","They are grown."],a:0,w:"'Then they are shipped to factories'"},
+      {q:"What is the last step?",o:["The mixture is heated.","Sugar is added.","The chocolate is cooled and wrapped.","The beans are roasted."],a:2,w:"'Finally, the chocolate is poured into moulds, cooled and wrapped'"}]},
+ listen:{lines:[{s:"A",t:"Hello, I'm calling about my order. It was supposed to be delivered yesterday."},{s:"B",t:"I'm sorry. Let me check. Your parcel was sent on Monday, but it was damaged during transport."},{s:"A",t:"Will it be replaced?"},{s:"B",t:"Yes, a new one will be sent tomorrow, and the delivery fee will be refunded."}],
+  qs:[{q:"What problem does the caller have?",o:["The order was not delivered on time","The wrong item was sent","The price was too high","The shop was closed"],a:0,w:"'It was supposed to be delivered yesterday'"},
+      {q:"What happened to the parcel?",o:["It was lost.","It was damaged during transport.","It was stolen.","It was returned."],a:1,w:"'it was damaged during transport'"},
+      {q:"What will be refunded?",o:["The delivery fee","The whole order","Nothing","The new parcel"],a:0,w:"'the delivery fee will be refunded'"}]},
+ write:{prompt:"Describe how a product is made or how a process works, such as making tea, recycling paper or applying for a visa. Write 6 to 8 sentences using Passive Voice and sequence words such as first, then, after that, finally.",min:45,
+  tips:["ใช้ is/are + V3 สำหรับขั้นตอนในปัจจุบัน","ใช้ first, then, next, after that, finally เรียงลำดับ","ไม่ต้องใส่ผู้ทำถ้าไม่สำคัญ","ตรวจกริยาช่อง 3 ให้ถูก (grow → grown, make → made)"],
+  model:"Paper is made from wood. First, trees are cut down and the logs are taken to a factory. There, the bark is removed and the wood is cut into small pieces. Then the pieces are mixed with water and heated until they become a soft pulp. After that, the pulp is pressed flat and dried. Finally, the paper is cut into sheets and packed. Today, a lot of paper is also made from recycled materials."},
+ quiz:[{q:"The new library ____ by the mayor next month.",o:["will open","will be opened","opened","is opening"],a:1,w:"มี by the mayor บอกผู้ทำ และห้องสมุดเป็นผู้ถูกเปิด ใช้ will be + V3"},
+       {q:"All products ____ before they leave the factory.",o:["inspect","are inspected","are inspecting","inspecting"],a:1,w:"สินค้าถูกตรวจสอบ ใช้ are + V3"},
+       {q:"My wallet ____ yesterday.",o:["stole","was stolen","has stolen","is stolen"],a:1,w:"กระเป๋าถูกขโมย อดีตมี yesterday ใช้ was + V3"},
+       {q:"The report has already ____.",o:["written","been written","be written","writing"],a:1,w:"Present Perfect Passive = has/have been + V3"}]},
+
+{id:"b9",tr:"base",title:"Conditionals (0, 1, 2, 3)",th:"ประโยคเงื่อนไขทั้งสี่แบบ",tag:"ระดับ B1–B2",
+ learn:{intro:"ประโยคเงื่อนไขใช้พูดถึงสิ่งที่เป็นไปได้ สิ่งที่สมมติ และสิ่งที่ไม่เกิดขึ้นจริงในอดีต ใช้บ่อยใน IELTS Speaking Part 3 และ Writing Task 2",
+  pts:[["Type 0: If you heat ice, it melts.","ข้อเท็จจริงหรือกฎ: If + Present Simple, Present Simple"],
+       ["Type 1: If it rains, we will stay home.","เป็นไปได้ในอนาคต: If + Present Simple, will + กริยารูปเดิม"],
+       ["Type 2: If I had more time, I would learn French.","สมมติสิ่งที่ไม่จริงในปัจจุบัน: If + Past Simple, would + กริยารูปเดิม (If I were you,… ใช้ were ได้กับทุกประธาน)"],
+       ["Type 3: If I had studied, I would have passed.","เสียใจกับอดีตที่เปลี่ยนไม่ได้: If + Past Perfect, would have + V3"]],
+  vocab:[["unless","ถ้าไม่ (= if not)","Unless you hurry, you will be late."],["provided that","ตราบใดที่","You can go provided that you finish."],["suppose","สมมติว่า","Suppose you won a million baht."],["regret","เสียใจ","I regret not studying harder."],["otherwise","ไม่เช่นนั้น","Leave now, otherwise you'll miss it."],["in case","เผื่อ","Take an umbrella in case it rains."]],
+  tip:"หลัง if ไม่ใช้ will: If it rains ถูก, If it will rain ผิด และ would ไม่ใช้ในส่วน if เช่นกัน"},
+ read:{title:"Life Choices",text:"Marco often thinks about the past. If he had accepted the job abroad, he would have earned more money. However, he would not have met his wife. If he had a choice now, he would probably choose the same path. He tells his students that unless they make plans, they will not reach their goals. 'If you work steadily, you will succeed,' he says, 'but if you wait for luck, you may wait a very long time.'",
+  qs:[{q:"What would Marco have done if he had accepted the job?",o:["Earned more money","Met his wife","Stayed at home","Taught students"],a:0,w:"'he would have earned more money'"},
+      {q:"What would Marco do if he had a choice now?",o:["Choose a different path","Choose the same path","Leave his wife","Move abroad"],a:1,w:"'he would probably choose the same path'"},
+      {q:"What happens, according to Marco, if students do not make plans?",o:["They will succeed.","They will not reach their goals.","They will be lucky.","They will find a job."],a:1,w:"'unless they make plans, they will not reach their goals'"}]},
+ listen:{lines:[{s:"A",t:"If you could live anywhere, where would you live?"},{s:"B",t:"I would live in Japan. If I spoke Japanese, I would move there tomorrow."},{s:"A",t:"Why don't you study it?"},{s:"B",t:"I will, provided that I can find a cheap course. Unless I start soon, I'll never learn."}],
+  qs:[{q:"Where would B like to live?",o:["Japan","Korea","England","Singapore"],a:0,w:"'I would live in Japan'"},
+      {q:"Why can't B move there at the moment?",o:["B doesn't speak Japanese","B has no money","B has no job","B doesn't like it"],a:0,w:"'If I spoke Japanese, I would move there tomorrow' แปลว่าตอนนี้ยังพูดไม่ได้"},
+      {q:"Under what condition will B study Japanese?",o:["If friends join","If the course is cheap","If it is online","If there is time"],a:1,w:"'provided that I can find a cheap course'"}]},
+ write:{prompt:"Write 6 to 8 sentences about your dreams or regrets. Use at least one Type 1, one Type 2 and one Type 3 conditional sentence.",min:45,
+  tips:["Type 1 แผนที่เป็นไปได้: If I pass the test, I will…","Type 2 ความฝัน: If I won the lottery, I would…","Type 3 ความเสียดาย: If I had studied harder, I would have…","อย่าใช้ will หรือ would ในส่วน if"],
+  model:"If I pass the exam in March, I will apply to a university in Australia. If I had more savings, I would travel around Europe first, but that isn't possible now. I sometimes regret not learning English earlier. If I had started in high school, I would have reached a higher level by now. Anyway, unless I keep practising every day, I won't improve quickly, so I study for an hour each evening. If I could talk to my younger self, I would say, work hard from the beginning."},
+ quiz:[{q:"If it ____ tomorrow, we will cancel the picnic.",o:["rains","will rain","rained","would rain"],a:0,w:"Type 1: if + Present Simple"},
+       {q:"If I ____ you, I would take the job.",o:["am","was being","were","will be"],a:2,w:"Type 2 ใช้ were ในสำนวน If I were you"},
+       {q:"If she had left earlier, she ____ the train.",o:["would catch","would have caught","will catch","caught"],a:1,w:"Type 3: would have + V3"},
+       {q:"You won't pass ____ you study harder.",o:["if","unless","when","although"],a:1,w:"unless = if not"}]},
+
+{id:"b10",tr:"base",title:"Reported Speech",th:"การเล่าสิ่งที่คนอื่นพูด",tag:"ระดับ B1–B2",
+ learn:{intro:"Reported Speech ใช้เล่าสิ่งที่คนอื่นพูดไว้ พบใน TOEIC Part 7 (อีเมลหรือรายงานการประชุมที่อ้างถึงคำพูด) และใช้ใน IELTS Speaking เวลาเล่าเหตุการณ์",
+  pts:[["He said (that) he was tired.","'I am tired' → He said he was tired. ถอยกาลหนึ่งขั้น: am/is → was, will → would, can → could"],
+       ["She said, 'I bought a car.' → She said she had bought a car.","Past Simple ถอยเป็น Past Perfect"],
+       ["He asked me where I lived. She asked if I was ready.","คำถามเปลี่ยนเป็นประโยคบอกเล่า ไม่ใช้ do/does และใช้ if หรือ whether กับคำถามแบบ yes/no"],
+       ["now → then · today → that day · tomorrow → the next day · here → there","เปลี่ยนคำบอกเวลาและสถานที่ให้ตรงกับมุมมองของผู้เล่า"]],
+  vocab:[["announce","ประกาศ","The company announced a new plan."],["explain","อธิบาย","She explained the rules."],["mention","กล่าวถึง","He mentioned the deadline."],["suggest","เสนอแนะ","She suggested meeting earlier."],["admit","ยอมรับ","He admitted his mistake."],["promise","สัญญา","I promised to call back."]],
+  tip:"say ไม่ต้องตามด้วยคน (He said that…) แต่ tell ต้องมีคน (He told me that…) และถ้าสิ่งที่พูดยังเป็นจริงอยู่ตอนเล่า จะไม่ถอยกาลก็ได้"},
+ read:{title:"Meeting Notes",text:"At the Monday meeting, the director announced that the company would open a new branch in Chiang Mai. She explained that the plan had been approved the week before. A staff member asked whether the new branch would hire more people, and the director said that around twenty employees would be needed. She also mentioned that the opening date was not final, and she told everyone to wait for an email.",
+  qs:[{q:"What did the director announce?",o:["A new branch would open in Chiang Mai.","The company would close.","Salaries would rise.","A new director would start."],a:0,w:"'announced that the company would open a new branch in Chiang Mai'"},
+      {q:"When had the plan been approved?",o:["The week before","The same day","A month earlier","The day after"],a:0,w:"'the plan had been approved the week before'"},
+      {q:"What were staff told to do?",o:["Apply for jobs","Wait for an email","Visit Chiang Mai","Call the director"],a:1,w:"'she told everyone to wait for an email'"}]},
+ listen:{lines:[{s:"A",t:"Did you speak to Mr. Lee about the schedule?"},{s:"B",t:"Yes. He said that he couldn't come on Friday, so he suggested meeting on Monday instead."},{s:"A",t:"Did he say what time?"},{s:"B",t:"He told me that he would be free after two o'clock."},{s:"A",t:"Great, I'll book the room."}],
+  qs:[{q:"What did Mr. Lee suggest?",o:["Meeting on Monday","Meeting on Friday","Cancelling the meeting","Meeting online"],a:0,w:"'he suggested meeting on Monday instead'"},
+      {q:"When will Mr. Lee be free on that day?",o:["After two o'clock","Before noon","At nine","All day"],a:0,w:"'he would be free after two o'clock'"},
+      {q:"What will A do?",o:["Book the room","Call Mr. Lee","Send an email","Cancel the schedule"],a:0,w:"'I'll book the room'"}]},
+ write:{prompt:"Your friend told you: 'I'm moving to Chiang Mai next month because I got a new job. I will start on 1st December, and I can't take my cat.' Report what she said in 5 to 6 sentences, using said, told, and asked whether.",min:40,
+  tips:["ถอยกาล: am → was, will → would, can't → couldn't","เปลี่ยน next month → the following month","ใช้ told + คน และ said + that","คำถามใช้ asked if/whether + ประโยคบอกเล่า"],
+  model:"My friend told me that she was moving to Chiang Mai the following month because she had got a new job. She said that she would start on the first of December. She also said that she couldn't take her cat, so she asked me whether I could look after it. I told her that I would think about it. She mentioned that she would pay for the cat food."},
+ quiz:[{q:"She said, 'I am busy.' → She said that she ____ busy.",o:["is","was","has been","will be"],a:1,w:"am/is ถอยเป็น was"},
+       {q:"He said, 'I will call you.' → He said he ____ call me.",o:["will","would","can","has"],a:1,w:"will ถอยเป็น would"},
+       {q:"She asked me, 'Do you like coffee?' → She asked me ____ I liked coffee.",o:["do","that","if","what"],a:2,w:"คำถาม yes/no ใช้ if หรือ whether"},
+       {q:"He ____ me that the meeting was cancelled.",o:["said","told","spoke","asked"],a:1,w:"tell ตามด้วยคนที่ฟัง"}]}
+];
+U=U.concat(B2);
+
+
+/* ---------- Placement test: 12 questions, easy to hard ---------- */
+var PLACE=[
+ {q:"My sister ____ a doctor.",o:["am","is","are","be"],a:1},
+ {q:"They ____ football every Sunday.",o:["plays","play","playing","is play"],a:1},
+ {q:"____ you like coffee?",o:["Do","Does","Is","Are"],a:0},
+ {q:"I ____ to the cinema yesterday.",o:["go","goed","went","gone"],a:2},
+ {q:"She ____ her homework last night.",o:["finish","finished","finishes","has finish"],a:1},
+ {q:"We ____ visit the museum tomorrow.",o:["are going to","did","has","were"],a:0},
+ {q:"There isn't ____ milk in the fridge.",o:["some","any","many","a few"],a:1},
+ {q:"I have lived in Bangkok ____ 2018.",o:["for","since","from","ago"],a:1},
+ {q:"If it rains, we ____ stay at home.",o:["would","will","are","did"],a:1},
+ {q:"This is the ____ book I have ever read.",o:["interesting","more interesting","most interesting","interestinger"],a:2},
+ {q:"The report ____ by the manager before the meeting.",o:["was checked","checked","has check","is checking"],a:0},
+ {q:"She asked me ____ I had finished the work.",o:["that","if","what","which"],a:1}
+];
+
+/* ---------- Timed mini mock tests (practice sets, not real exam papers) ---------- */
+var MOCK={
+ toeic:{title:"TOEIC Mini Mock 1",mins:10,items:[
+  {q:"Ms. Park ____ the monthly report to the director every Friday.",o:["send","sends","sending","is sent"],a:1,w:"ประธานเอกพจน์ + every Friday ใช้ Present Simple เติม s",tag:"ไวยากรณ์"},
+  {q:"All employees must submit their expense reports ____ the end of the month.",o:["by","until","during","since"],a:0,w:"กำหนดส่งไม่เกินวันที่กำหนด ใช้ by",tag:"ไวยากรณ์"},
+  {q:"The new software has made our work much ____.",o:["easy","easier","easily","ease"],a:1,w:"much + comparative: easier",tag:"ไวยากรณ์"},
+  {q:"The hotel offers a ____ breakfast to all guests.",o:["complimentary","complimented","compliment","complimentarily"],a:0,w:"หน้า noun ต้องเป็น adjective: complimentary = ฟรี",tag:"รูปคำ"},
+  {q:"Our sales increased ____ after the new advertisement appeared.",o:["significant","significance","significantly","signify"],a:2,w:"ขยายกริยา increased ใช้ adverb",tag:"รูปคำ"},
+  {q:"The manager asked us to ____ the meeting until next week.",o:["postpone","postponing","postponed","postpones"],a:0,w:"ask someone to + กริยารูปเดิม",tag:"ไวยากรณ์"},
+  {q:"Customers can get a full ____ if the product is damaged.",o:["refund","refuse","receipt","reserve"],a:0,w:"full refund = คืนเงินเต็มจำนวน",tag:"คำศัพท์"},
+  {q:"The flight was ____ because of heavy fog.",o:["delayed","reduced","closed","approved"],a:0,w:"flight + fog = เที่ยวบินล่าช้า",tag:"คำศัพท์"},
+  {p:1,title:"Notice to Residents: Maintenance Work",text:"The water supply in Building C will be shut off on Wednesday, 18 June, from 9:00 a.m. to 1:00 p.m., while workers replace old pipes. Residents are advised to store enough water for cooking and cleaning before the work begins. Building A and Building B will not be affected. If you have questions, please contact the building office at extension 120 by Tuesday. We apologize for any inconvenience."},
+  {q:"What is the purpose of the notice?",o:["To announce a rent increase","To inform residents about a water shut-off","To invite residents to a meeting","To advertise a cleaning service"],a:1,w:"ประกาศแจ้งว่าน้ำจะถูกปิดชั่วคราว",tag:"อ่านจับใจความ"},
+  {q:"Which building will be affected?",o:["Building A","Building B","Building C","All buildings"],a:2,w:"'Water supply in Building C will be shut off'",tag:"อ่านจับใจความ"},
+  {q:"What are residents advised to do?",o:["Move out temporarily","Store water in advance","Call the police","Pay a fee"],a:1,w:"'store enough water… before the work begins'",tag:"อ่านจับใจความ"},
+  {q:"By when should residents contact the office with questions?",o:["Monday","Tuesday","Wednesday","Thursday"],a:1,w:"'extension 120 by Tuesday'",tag:"อ่านจับใจความ"}
+ ]},
+ ielts:{title:"IELTS Reading Mini Mock 1",mins:12,items:[
+  {p:1,title:"Rooftop Gardens",text:"In recent years, rooftop gardens have become a common sight in crowded cities. The idea is not new: the ancient Babylonians are said to have built terraced gardens, though historians still debate where they stood. Modern rooftop gardens, however, are valued for practical reasons. Plants absorb heat, so a building with a green roof can stay several degrees cooler in summer and needs less air conditioning. The soil also holds rainwater, which reduces the amount that flows into drains during storms.\n\nCities that have introduced green roofs report other benefits. In one study, the number of bird species recorded in the city centre rose after hundreds of roofs were planted. Yet there are obstacles. A green roof is heavier than a normal one, so many older buildings need extra support before gardens can be installed. Installation costs are also higher, and some owners worry about leaks. Because of this, several city governments now offer money to owners who agree to build one."},
+  {q:"Rooftop gardens are a completely new idea.",o:["True","False","Not Given"],a:1,w:"False: 'The idea is not new'",tag:"T/F/NG"},
+  {q:"Historians agree on where the Babylonian gardens were located.",o:["True","False","Not Given"],a:1,w:"False: historians 'still debate where they stood'",tag:"T/F/NG"},
+  {q:"A building with a green roof may need less air conditioning.",o:["True","False","Not Given"],a:0,w:"True: 'needs less air conditioning'",tag:"T/F/NG"},
+  {q:"Green roofs are cheaper to install than normal roofs.",o:["True","False","Not Given"],a:1,w:"False: 'Installation costs are also higher'",tag:"T/F/NG"},
+  {q:"Most owners in the bird study were happy with their green roofs.",o:["True","False","Not Given"],a:2,w:"Not Given: บทความไม่พูดถึงความพอใจของเจ้าของอาคาร",tag:"T/F/NG"},
+  {q:"The number of bird species in one city centre increased after many roofs were planted.",o:["True","False","Not Given"],a:0,w:"True: 'the number of bird species… rose'",tag:"T/F/NG"},
+  {q:"Why can green roofs help reduce flooding?",o:["The soil holds rainwater.","Plants make it rain less.","They block the drains.","They are heavy."],a:0,w:"'The soil also holds rainwater'",tag:"เลือกตอบ"},
+  {q:"What problem do many older buildings face?",o:["They may need extra support.","They are too small for plants.","They have no drains.","They are not allowed to have gardens."],a:0,w:"'many older buildings need extra support'",tag:"เลือกตอบ"},
+  {q:"Why do some city governments offer money to owners?",o:["To encourage them to build green roofs","To repair drains","To buy older buildings","To study birds"],a:0,w:"'offer money to owners who agree to build one'",tag:"เลือกตอบ"},
+  {q:"What is the main idea of the passage?",o:["Green roofs bring benefits but also challenges.","Babylon was the first city.","Air conditioning is harmful.","Birds prefer old buildings."],a:0,w:"บทความเล่าทั้งข้อดีและอุปสรรคของหลังคาสีเขียว",tag:"เลือกตอบ"}
+ ]}
+};
+
+
+/* =====================================================================
+   EXAM PREP: TOEIC / IELTS learning path, placement test and timed mocks
+   (content above in EXAM CONTENT; original material, not real exam papers)
+   ===================================================================== */
+var UX={unit:null,step:"learn",A:{},tr:false,speaking:false};
+var RUN=null, runTimer=null;
+function X(){return S.d.ex}
+function byId(id){return U.filter(function(u){return u.id===id})[0]}
+function unitsOf(tr){return U.filter(function(u){return u.tr===tr})}
+function exStart(){var b=unitsOf("base"); return X().place?Math.min(X().place.start||0,b.length):0}
+function pathOf(tr){return unitsOf("base").slice(exStart()).concat(unitsOf(tr))}
+function xDone(uid,st){return !!X().done[uid+"_"+st]}
+function xCount(u){return STEPS.filter(function(s){return xDone(u.id,s)}).length}
+function nextUp(tr){var p=pathOf(tr); for(var i=0;i<p.length;i++)for(var j=0;j<STEPS.length;j++)if(!xDone(p[i].id,STEPS[j]))return {u:p[i],s:STEPS[j],n:i+1}; return null}
+function trackPct(tr){var p=pathOf(tr),d=0; p.forEach(function(u){d+=xCount(u)}); return p.length?Math.round(d/(p.length*STEPS.length)*100):0}
+function remSteps(tr){var n=0; pathOf(tr).forEach(function(u){n+=STEPS.length-xCount(u)}); return n}
+function qsFor(uid,sec){var u=byId(uid); return sec==="read"?u.read.qs:sec==="listen"?u.listen.qs:u.quiz}
+function fmtT(s){return Math.floor(s/60)+":"+("0"+(s%60)).slice(-2)}
+function wc(t){var m=String(t||"").trim().match(/[A-Za-z0-9'’-]+/g); return m?m.length:0}
+function xMark(uid,st){var f=!xDone(uid,st); X().done[uid+"_"+st]=1; mark(); if(f)pushHist("exam",byId(uid).title+" · "+STEP_LBL[st]); save()}
+var STEP_LBL={learn:"Learn",read:"Read",listen:"Listen",write:"Write",quiz:"Quiz"};
+var STEP_IC={learn:"book-open",read:"book-open",listen:"volume-2",write:"pencil",quiz:"list-checks"};
+function recMiss(ref,ok){var c=X().miss[ref]; if(!ok){X().miss[ref]={at:Date.now(),ok:false}} else if(c&&!c.ok){X().miss[ref]={at:Date.now(),ok:true}}}
+function qFromRef(ref){
+  var p=ref.split("|");
+  if(p[0]==="m"){var it=MOCK[p[1]]&&MOCK[p[1]].items.filter(function(x){return x.q}); return it&&it[+p[2]]}
+  var u=byId(p[0]); if(!u)return null; var qs=qsFor(p[0],p[1]); return qs&&qs[+p[2]];
+}
+function missList(){return Object.keys(X().miss).filter(function(k){return !X().miss[k].ok&&qFromRef(k)})}
+
+/* ----- Exam home ----- */
+function trackSeg(){
+  return '<div class="row" role="group" aria-label="Choose exam"><button class="chip" data-a="x-track" data-v="toeic" aria-pressed="'+(X().track==="toeic")+'">TOEIC</button><button class="chip" data-a="x-track" data-v="ielts" aria-pressed="'+(X().track==="ielts")+'">IELTS</button></div>';
+}
+function planCard(tr){
+  var d=X().date, h='<div class="card"><div class="lbl">Study plan</div>';
+  var days=null; if(d){var t=new Date(); t.setHours(0,0,0,0); days=Math.round((new Date(d+"T00:00:00")-t)/864e5)}
+  if(days!==null&&days>=0){
+    var rem=remSteps(tr), per=days>0?Math.ceil(rem/days):rem;
+    h+='<div class="row" style="align-items:baseline;margin:8px 0"><span class="big">'+days+'</span><span class="muted">days until your exam</span></div><p class="small muted">'+rem+' steps left. About <b style="color:var(--tx)">'+per+'</b> step'+(per===1?"":"s")+' a day keeps you on track.</p>';
+  } else if(days!==null&&days<0){h+='<p class="muted" style="margin:8px 0">That date has passed. Pick a new exam date.</p>'}
+  else h+='<p class="muted small" style="margin:8px 0">Set your exam date and we will show how many steps to do each day.</p>';
+  return h+'<div class="row" style="margin-top:10px"><input class="inp" type="date" id="exdate" value="'+esc(d||"")+'" aria-label="Exam date" style="width:auto"></div></div>';
+}
+function mockHist(tr){
+  var ms=X().mocks.filter(function(m){return m.k===tr}).slice(-4).reverse();
+  if(!ms.length)return '<p class="muted small">No attempts yet.</p>';
+  return ms.map(function(m){return '<div class="prow"><span>'+esc(new Date(m.at).toLocaleDateString(undefined,{day:"numeric",month:"short"}))+' · '+fmtT(m.t)+'</span><b style="margin-left:auto">'+m.s+'/'+m.n+' · '+Math.round(m.s/m.n*100)+'%</b></div>'}).join("");
+}
+function examHome(){
+  var tr=X().track, name=tr==="toeic"?"TOEIC":"IELTS", nx=nextUp(tr), pct=trackPct(tr), p=pathOf(tr), mk=MOCK[tr], nq=mk.items.filter(function(i){return i.q}).length, ml=missList().length, pl=X().place;
+  var h=pageTitle("Exam Prep","Fundamentals to exam day, with original practice material.")+'<div class="gap">'+trackSeg();
+  h+='<section class="card welcome" style="grid-template-columns:1fr"><div>'+(nx?'<span class="tag">Next up</span><h2 style="font-size:1.5rem;margin:8px 0 4px">'+(nx.u.tr==="base"?"Foundation ":"Unit ")+nx.n+' · '+esc(nx.u.title)+'</h2><p class="muted">Step: '+STEP_LBL[nx.s]+'</p><div style="margin:14px 0 6px">'+bar(pct)+'</div><p class="small muted">'+name+' path · '+pct+'% complete</p><div class="row" style="margin-top:14px"><button class="btn" data-a="x-open" data-u="'+nx.u.id+'" data-s="'+nx.s+'">'+ic("play")+'Continue</button></div>':'<span class="tag">All done</span><h2 style="font-size:1.5rem;margin:8px 0">You finished the '+name+' path</h2><p class="muted">Take the timed mock and review your mistakes until they stick.</p>')+'</div></section>';
+  h+='<div class="g2">'+planCard(tr)+'<div class="card"><div class="lbl">Level check</div>'+(pl?'<p style="margin:8px 0"><b>'+pl.s+'/'+pl.n+'</b> · starts at foundation unit '+(pl.start+1)+'</p><p class="small muted">Retake it any time to move your starting point.</p>':'<p class="muted small" style="margin:8px 0">Not sure where to start? A 12-question test (about 5 minutes) picks your starting unit.</p>')+'<div class="row" style="margin-top:10px"><button class="btn sm" data-a="x-run" data-k="place">'+(pl?"Retake":"Take the test")+'</button></div></div></div>';
+  h+='<div class="g2"><div class="card"><div class="lbl">Timed mock exam</div><h3 style="margin:8px 0 4px">'+esc(mk.title)+'</h3><p class="muted small">'+nq+' questions · '+mk.mins+' minutes · auto-submits at zero</p><div class="row" style="margin:12px 0"><button class="btn" data-a="x-run" data-k="mock">'+ic("play")+'Start mock</button>'+(ml?'<button class="btn ghost" data-a="x-run" data-k="miss">Review '+ml+' mistake'+(ml===1?"":"s")+'</button>':'')+'</div>'+mockHist(tr)+'</div>'+
+    '<div class="card"><div class="lbl">Good to know</div><p class="small muted" style="margin-top:8px">Questions are original practice items written for this app, not real exam papers. Listening uses your browser’s voice, so it sounds synthetic. Writing is self-checked against a model answer (no automatic feedback in this app).</p></div></div>';
+  h+='<div class="sech"><h2>Learning path</h2><span class="muted small">'+p.length+' units</span></div><div class="gap" style="gap:12px">';
+  p.forEach(function(u,i){
+    var c=xCount(u), sc=STEPS.map(function(s){return X().scores[u.id+"_"+s]}).filter(Boolean);
+    h+='<div class="card hover" style="display:grid;gap:10px"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><div style="min-width:0"><span class="tag">'+(u.tr==="base"?"Foundation":name)+' · '+esc(u.tag)+'</span><h3 style="margin-top:8px">'+(i+1)+'. '+esc(u.title)+'</h3><div class="muted small">'+esc(u.th)+'</div></div><button class="btn sm'+(c===STEPS.length?" ghost":"")+'" data-a="x-open" data-u="'+u.id+'" data-s="learn">'+(c===0?"Start":c===STEPS.length?"Review":"Open")+'</button></div><div class="row" style="gap:6px">'+STEPS.map(function(s){var d=xDone(u.id,s),q=X().scores[u.id+"_"+s]; return '<span class="chip" style="min-height:30px;padding:3px 10px;'+(d?'background:rgba(94,234,212,.16);color:var(--mint);border-color:rgba(94,234,212,.4)':'')+'">'+(d?"✓ ":"")+STEP_LBL[s]+(q?' '+q.s+'/'+q.n:'')+'</span>'}).join("")+'</div></div>';
+  });
+  return h+'</div></div>';
+}
+
+/* ----- Unit view ----- */
+function xQs(u,sec){
+  var qs=qsFor(u.id,sec), key=u.id+"_"+sec, A=UX.A[key]||(UX.A[key]={sel:{},checked:false});
+  var h='<div class="gap" style="gap:14px">'+qs.map(function(q,qi){
+    return '<div class="card"><p style="font-weight:600;margin-bottom:10px"><span class="muted">'+(qi+1)+'.</span> '+esc(q.q)+'</p><div class="gap" style="gap:8px">'+q.o.map(function(o,oi){
+      var c=""; if(A.checked){c=oi===q.a?" ok":(A.sel[qi]===oi?" no":"")} else if(A.sel[qi]===oi)c=" sel";
+      return '<button class="opt'+c+'" data-a="x-pick" data-k="'+key+'" data-q="'+qi+'" data-i="'+oi+'"'+(A.checked?" disabled":"")+'><span class="k">'+"ABCD"[oi]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div>'+(A.checked&&q.w?'<p class="small muted" style="margin-top:10px">'+esc(q.w)+'</p>':'')+'</div>'}).join("")+'</div>';
+  if(!A.checked)h+='<div class="row" style="margin-top:14px"><button class="btn" data-a="x-check" data-k="'+key+'">Check answers</button><span class="small muted" id="xhint"></span></div>';
+  else{var c=0; qs.forEach(function(q,i){if(A.sel[i]===q.a)c++}); h+='<div class="card" style="margin-top:14px"><b>Score: '+c+' / '+qs.length+'</b><div class="row" style="margin-top:10px"><button class="btn ghost" data-a="x-retry" data-k="'+key+'">Try again</button>'+nextStepBtn(u,sec)+'</div></div>'}
+  return h;
+}
+function nextStepBtn(u,sec){var i=STEPS.indexOf(sec); if(i>=STEPS.length-1)return '<button class="btn" data-a="x-back">Back to path</button>'; return '<button class="btn" data-a="x-step" data-s="'+STEPS[i+1]+'">Next: '+STEP_LBL[STEPS[i+1]]+ic("chevron-right")+'</button>'}
+function xUnit(){
+  var u=byId(UX.unit), st=UX.step;
+  var h='<div class="gap"><div class="row"><button class="btn sm ghost" data-a="x-back">'+ic("chevron-left")+'Path</button></div><div class="pg-t" style="margin:0"><span class="tag" style="justify-self:start">'+esc(u.tag)+'</span><h1>'+esc(u.title)+'</h1><p class="muted">'+esc(u.th)+'</p></div>';
+  h+='<div class="row" role="tablist" aria-label="Steps">'+STEPS.map(function(s){return '<button class="chip" role="tab" data-a="x-step" data-s="'+s+'" aria-pressed="'+(st===s)+'">'+(xDone(u.id,s)?"✓ ":"")+STEP_LBL[s]+'</button>'}).join("")+'</div>';
+  if(st==="learn"){
+    var L=u.learn;
+    h+='<div class="card"><p>'+esc(L.intro)+'</p></div><div class="card"><div class="lbl">Key points</div>'+L.pts.map(function(p){return '<div class="prow" style="display:block"><p style="font-weight:600;color:var(--blue)">'+esc(p[0])+'</p><p class="small muted" style="margin-top:4px">'+esc(p[1])+'</p></div>'}).join("")+'</div>';
+    h+='<div class="card"><div class="lbl">Words to know</div>'+L.vocab.map(function(v){return '<div class="prow"><div style="min-width:0"><div class="e">'+esc(v[0])+' <span class="muted" style="font-weight:400">· '+esc(v[1])+'</span></div><div class="small muted" style="font-style:italic">'+esc(v[2])+'</div></div><span style="margin-left:auto">'+audioBtn(v[0])+'</span></div>'}).join("")+'</div>';
+    h+='<div class="card" style="border-left:4px solid var(--mint)"><div class="lbl">Tip</div><p style="margin-top:6px">'+esc(L.tip)+'</p></div>';
+    if(u.tr==="base")h+='<div class="card"><p class="small muted">More grammar explanations: <a href="https://dictionary.cambridge.org/grammar/british-grammar/" target="_blank" rel="noopener noreferrer" style="color:var(--blue)">Cambridge British Grammar ↗</a> (external site)</p></div>';
+    h+='<div class="row">'+(xDone(u.id,"learn")?nextStepBtn(u,"learn"):'<button class="btn" data-a="x-learned">Finished this step</button>')+'</div>';
+  } else if(st==="read"){
+    h+='<div class="card"><div class="lbl">Passage</div><h3 style="margin:8px 0">'+esc(u.read.title)+'</h3><p style="font-size:1.0625rem;line-height:1.75">'+esc(u.read.text)+'</p></div>'+xQs(u,"read");
+  } else if(st==="listen"){
+    h+='<div class="card"><div class="lbl">Audio</div><p class="small muted" style="margin:6px 0 12px">Press play, listen without reading, then answer. The voice comes from your browser.</p><div class="row"><button class="btn" id="playBtn" data-a="x-play">'+ic("play")+'Play audio</button><button class="btn ghost" data-a="x-tr">'+(UX.tr?"Hide":"Show")+' transcript</button></div><p class="small muted" id="lmsg" style="margin-top:8px"></p>'+(UX.tr?'<div style="margin-top:12px">'+u.listen.lines.map(function(l){return '<p style="margin:6px 0"><b>'+esc(l.s)+':</b> '+esc(l.t)+'</p>'}).join("")+'</div>':'')+'</div>'+xQs(u,"listen");
+  } else if(st==="write"){
+    var W=u.write, dr=X().drafts[u.id]||"", n=wc(dr);
+    h+='<div class="card"><div class="lbl">Task</div><p style="margin:8px 0">'+esc(W.prompt)+'</p><ul style="margin:8px 0 0;padding-left:20px;color:var(--tx2)" class="small">'+W.tips.map(function(t){return '<li>'+esc(t)+'</li>'}).join("")+'</ul></div>';
+    h+='<div class="card"><textarea class="inp ta" id="wr" rows="9" placeholder="Write your answer here…" aria-label="Your writing">'+esc(dr)+'</textarea><div class="row" style="justify-content:space-between;margin-top:8px"><span class="small muted" id="wcnt">'+n+' words (aim for '+W.min+'+)</span><span class="small muted">Draft saved automatically</span></div><div class="row" style="margin-top:12px"><button class="btn" data-a="x-wdone">Complete step</button><button class="btn ghost" data-a="x-model">'+(UX.model?"Hide":"Show")+' model answer</button></div></div>';
+    if(UX.model)h+='<div class="card" style="border-left:4px solid var(--blue)"><div class="lbl">Model answer</div><p style="margin-top:8px;line-height:1.7">'+esc(W.model)+'</p></div>';
+    if(xDone(u.id,"write"))h+='<div class="row">'+nextStepBtn(u,"write")+'</div>';
+  } else {
+    h+=xQs(u,"quiz");
+  }
+  return h+'</div>';
+}
+
+/* ----- Timed run (placement, mock, mistakes) ----- */
+function startRun(kind){
+  var items,title,mins=0,tr=X().track;
+  if(kind==="place"){items=PLACE;title="Level check"}
+  else if(kind==="mock"){var m=MOCK[tr];items=m.items;title=m.title;mins=m.mins}
+  else{var refs=missList(); items=refs.map(function(r){return Object.assign({ref:r},qFromRef(r))}); title="Review mistakes"; if(!items.length){toast("No mistakes to review.");return}}
+  var qs=items.filter(function(x){return x.q});
+  RUN={kind:kind,tr:tr,items:items,qs:qs,n:qs.length,sel:{},title:title,mins:mins,t0:Date.now(),end:mins?Date.now()+mins*60000:0,done:false,res:null};
+  clearRun(); if(mins)runTimer=setInterval(runTick,1000);
+  S.page="exam"; render(); window.scrollTo(0,0);
+}
+function clearRun(){if(runTimer){clearInterval(runTimer);runTimer=null}}
+function runTick(){
+  if(!RUN||RUN.done||!RUN.end){clearRun();return}
+  var left=Math.max(0,Math.round((RUN.end-Date.now())/1000)), el=document.getElementById("tm");
+  if(el){el.textContent=fmtT(left); if(left<=60)el.style.color="var(--bad)"}
+  if(left<=0)submitRun(true);
+}
+function submitRun(auto){
+  var R=RUN; if(!R||R.done)return; clearRun();
+  var c=0,tags={},wrong=[];
+  R.qs.forEach(function(q,i){
+    var ok=R.sel[i]===q.a; if(ok)c++;
+    if(q.tag){var t=tags[q.tag]||(tags[q.tag]={c:0,n:0}); t.n++; if(ok)t.c++}
+    if(!ok)wrong.push(i);
+    if(R.kind==="mock")recMiss("m|"+R.tr+"|"+i,ok); else if(R.kind==="miss"&&q.ref)recMiss(q.ref,ok);
+  });
+  var used=Math.round((Date.now()-R.t0)/1000);
+  R.res={c:c,n:R.n,tags:tags,wrong:wrong,used:used,auto:!!auto,prev:null};
+  if(R.kind==="mock"){
+    var prev=X().mocks.filter(function(m){return m.k===R.tr}).slice(-1)[0];
+    R.res.prev=prev?Math.round(prev.s/prev.n*100):null;
+    X().mocks.push({k:R.tr,s:c,n:R.n,at:Date.now(),t:used}); X().mocks=X().mocks.slice(-30);
+  } else if(R.kind==="place"){
+    var start=c<=4?0:c<=7?2:c<=9?4:6; X().place={s:c,n:R.n,start:start,at:Date.now()};
+  }
+  mark(); pushHist("exam",R.title+" · "+c+"/"+R.n); save(); R.done=true; render(true); window.scrollTo(0,0);
+  if(c/R.n>=.8)confetti();
+}
+function runView(){
+  var R=RUN, h='<div class="gap">';
+  if(!R.done){
+    var left=R.end?Math.max(0,Math.round((R.end-Date.now())/1000)):0, qi=0;
+    h+='<div class="runbar"><div><div class="lbl">'+esc(R.title)+'</div><b id="ans">'+Object.keys(R.sel).length+'/'+R.n+'</b> <span class="small muted">answered</span></div>'+(R.end?'<div class="tmr" id="tm" role="timer">'+fmtT(left)+'</div>':'')+'<div class="row"><button class="btn sm ghost" data-a="x-rexit">Exit</button><button class="btn sm" data-a="x-rsubmit">Submit</button></div></div>';
+    R.items.forEach(function(it){
+      if(it.p){h+='<div class="card"><div class="lbl">Passage</div><h3 style="margin:8px 0">'+esc(it.title)+'</h3><p style="line-height:1.75">'+esc(it.text)+'</p></div>'; return}
+      var i=qi++;
+      h+='<div class="card"><p style="font-weight:600;margin-bottom:10px"><span class="muted">'+(i+1)+'.</span> '+esc(it.q)+'</p><div class="gap" style="gap:8px">'+it.o.map(function(o,oi){return '<button class="opt'+(R.sel[i]===oi?" sel":"")+'" data-a="x-rpick" data-q="'+i+'" data-i="'+oi+'"><span class="k">'+"ABCD"[oi]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div></div>';
+    });
+    return h+'<div class="row" style="justify-content:flex-end"><button class="btn" data-a="x-rsubmit">Submit answers</button></div></div>';
+  }
+  var res=R.res, pct=Math.round(res.c/res.n*100);
+  h+='<div class="card empty">'+slot("quiz","Exam result","empty")+'<div class="score">'+res.c+' / '+res.n+'</div><h3>'+pct+'% · time '+fmtT(res.used)+(res.auto?" · time ran out":"")+'</h3>'+(res.prev!==null?'<p class="muted small">Previous attempt: '+res.prev+'%</p>':'')+'</div>';
+  if(R.kind==="place"){var st=X().place.start; h+='<div class="card"><div class="lbl">Recommendation</div><p style="margin-top:8px">Your learning path now starts at foundation unit '+(st+1)+'.</p></div>'}
+  var tg=Object.keys(res.tags); if(tg.length)h+='<div class="card"><div class="lbl">By topic</div>'+tg.map(function(t){var x=res.tags[t],p=Math.round(x.c/x.n*100);return '<div style="padding:8px 0"><div class="row small" style="justify-content:space-between;flex-wrap:nowrap"><span>'+esc(t)+'</span><span class="muted">'+x.c+'/'+x.n+'</span></div>'+bar(p)+'</div>'}).join("")+'</div>';
+  if(res.wrong.length){h+='<div class="sech"><h2>Review your mistakes</h2></div>'+res.wrong.map(function(i){var q=R.qs[i]; return '<div class="card"><p style="font-weight:600">'+esc(q.q)+'</p><p class="small" style="margin-top:8px"><span class="muted">Your answer:</span> '+(R.sel[i]===undefined?"(none)":esc(q.o[R.sel[i]]))+'</p><p class="small"><span class="muted">Correct:</span> <b style="color:var(--mint)">'+esc(q.o[q.a])+'</b></p>'+(q.w?'<p class="small muted" style="margin-top:6px">'+esc(q.w)+'</p>':'')+'</div>'}).join("")}
+  return h+'<div class="row"><button class="btn" data-a="x-rexit">Back to Exam Prep</button>'+(R.kind!=="miss"?'<button class="btn ghost" data-a="x-run" data-k="'+R.kind+'">Try again</button>':'')+'</div></div>';
+}
+pages.exam=function(){if(RUN)return runView(); if(UX.unit)return xUnit(); return examHome()};
+
+/* ----- Listening playback ----- */
+function xStop(){try{speechSynthesis.cancel()}catch(e){} UX.speaking=false; var b=document.getElementById("playBtn"); if(b){b.innerHTML=ic("play")+"Play audio"; refreshIcons()}}
+function xPlay(){
+  if(UX.speaking){xStop();return}
+  var u=byId(UX.unit), m=document.getElementById("lmsg");
+  if(!("speechSynthesis" in window)||typeof SpeechSynthesisUtterance==="undefined"){if(m)m.textContent="This browser cannot play speech. Show the transcript and read it instead.";UX.tr=true;render(true);return}
+  var vs=speechSynthesis.getVoices()||[], v=vs.filter(function(x){return /^en[-_]US/i.test(x.lang)})[0]||vs.filter(function(x){return /^en/i.test(x.lang)})[0], parts=[];
+  u.listen.lines.forEach(function(l){(l.t.match(/[^.!?]+[.!?]+/g)||[l.t]).forEach(function(s){parts.push({s:l.s,t:s.trim()})})});
+  speechSynthesis.cancel(); UX.speaking=true; var b=document.getElementById("playBtn"); if(b){b.innerHTML=ic("x")+"Stop"; refreshIcons()}
+  var started=false, tm;
+  parts.forEach(function(p,i){
+    var ut=new SpeechSynthesisUtterance(p.t); ut.lang="en-US"; if(v)ut.voice=v; ut.rate=S.d.set.rate; ut.pitch=p.s==="B"?0.8:1.05;
+    ut.onstart=function(){started=true;clearTimeout(tm)};
+    if(i===parts.length-1)ut.onend=function(){xStop()};
+    ut.onerror=function(){xStop()};
+    speechSynthesis.speak(ut);
+  });
+  tm=setTimeout(function(){if(!started){xStop(); var mm=document.getElementById("lmsg"); if(mm)mm.textContent="Audio did not start on this device. Use the transcript instead."; UX.tr=true; render(true)}},3000);
+}
+
+/* ----- Exam events (second delegated listener) ----- */
+document.addEventListener("click",function(e){
+  var el=e.target.closest("[data-a]"); if(!el)return; var a=el.dataset.a; if(a.indexOf("x-")!==0)return;
+  if(a==="x-track"){X().track=el.dataset.v; save(); render(true)}
+  else if(a==="x-open"){S.page="exam"; UX.unit=el.dataset.u; UX.step=el.dataset.s||"learn"; UX.model=false; UX.tr=false; xStop(); render(); window.scrollTo(0,0)}
+  else if(a==="x-back"){xStop(); UX.unit=null; render(); window.scrollTo(0,0)}
+  else if(a==="x-step"){xStop(); UX.step=el.dataset.s; UX.model=false; render(true); window.scrollTo(0,0)}
+  else if(a==="x-learned"){xMark(UX.unit,"learn"); toast("Step complete","ok"); render(true)}
+  else if(a==="x-tr"){UX.tr=!UX.tr; render(true)}
+  else if(a==="x-model"){UX.model=!UX.model; render(true)}
+  else if(a==="x-play"){xPlay()}
+  else if(a==="x-pick"){var A=UX.A[el.dataset.k]; if(!A||A.checked)return; A.sel[+el.dataset.q]=+el.dataset.i; render(true)}
+  else if(a==="x-retry"){UX.A[el.dataset.k]={sel:{},checked:false}; render(true)}
+  else if(a==="x-check"){
+    var key=el.dataset.k, pr=key.split("_"), qs=qsFor(pr[0],pr[1]), A2=UX.A[key];
+    if(Object.keys(A2.sel).length<qs.length){var hn=document.getElementById("xhint"); if(hn)hn.textContent="Answer every question first."; return}
+    A2.checked=true; var c=0; qs.forEach(function(q,i){if(A2.sel[i]===q.a)c++});
+    var sc={s:c,n:qs.length,at:Date.now()}, old=X().scores[key]; if(!old||sc.s/sc.n>old.s/old.n)X().scores[key]=sc;
+    qs.forEach(function(q,i){recMiss(pr[0]+"|"+pr[1]+"|"+i,A2.sel[i]===q.a)});
+    xMark(pr[0],pr[1]); if(c===qs.length)confetti(); render(true);
+  }
+  else if(a==="x-wdone"){var u=byId(UX.unit), t=(X().drafts[u.id]||""); if(wc(t)<Math.round(u.write.min*0.6)){toast("Write at least "+Math.round(u.write.min*0.6)+" words first.","warn");return} xMark(u.id,"write"); toast("Step complete","ok"); render(true)}
+  else if(a==="x-run"){startRun(el.dataset.k)}
+  else if(a==="x-rpick"){RUN.sel[+el.dataset.q]=+el.dataset.i; [].forEach.call(el.parentNode.children,function(b){b.classList.remove("sel")}); el.classList.add("sel"); var an=document.getElementById("ans"); if(an)an.textContent=Object.keys(RUN.sel).length+"/"+RUN.n}
+  else if(a==="x-rsubmit"){submitRun(false)}
+  else if(a==="x-rexit"){clearRun(); RUN=null; render(); window.scrollTo(0,0)}
+});
+document.addEventListener("input",function(e){
+  var t=e.target;
+  if(t.id==="wr"&&UX.unit){X().drafts[UX.unit]=t.value; var c=document.getElementById("wcnt"); if(c)c.textContent=wc(t.value)+" words (aim for "+byId(UX.unit).write.min+"+)"; clearTimeout(UX.dt); UX.dt=setTimeout(save,500)}
+});
+document.addEventListener("change",function(e){
+  if(e.target.id==="exdate"){X().date=e.target.value; save(); render(true)}
+});
+
 /* ---------------------------------------------------------------------
    Start
    --------------------------------------------------------------------- */
@@ -890,4 +1625,5 @@ setTimeout(function(){render()},reduced()?0:260);
 })();
 </script>
 
-</body></html>
+</body>
+</html>
