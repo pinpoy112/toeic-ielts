@@ -1,6 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>TOEIC IELTS Coach</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -177,6 +181,8 @@ ul.tips{margin:0; padding-left:20px; display:grid; gap:4px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .inp{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit;min-height:46px;min-width:0;flex:1 1 150px}
 .seg.three{grid-template-columns:repeat(3,1fr)}
+.seg.four{grid-template-columns:repeat(4,1fr)}
+.seg.four button{padding:10px 2px;font-size:.9375rem}
 .chip{display:inline-block;font-size:.6875rem;font-weight:600;background:var(--soft);color:var(--muted);padding:1px 7px;border-radius:99px;vertical-align:middle;margin-left:4px}
 .unit.skip{opacity:.75}
 .big{font-family:var(--f-head);font-size:2rem;line-height:1}
@@ -192,7 +198,7 @@ ul.tips{margin:0; padding-left:20px; display:grid; gap:4px}
 .tm.low{color:var(--bad)}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .tabs button{min-width:0;line-height:1.2;text-align:center}
-.wrow{display:grid;grid-template-columns:1fr auto auto;gap:4px;align-items:center;padding-block:8px;border-top:1px solid var(--line)}
+.wrow{display:grid;grid-template-columns:1fr auto auto auto;gap:4px;align-items:center;padding-block:8px;border-top:1px solid var(--line)}
 .wrow:first-child{border-top:0}
 .wrow .en{font-family:var(--f-read);font-weight:600;font-size:1.0625rem;overflow-wrap:anywhere}
 .wrow .wth{color:var(--muted);font-size:.9375rem}
@@ -206,9 +212,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .toast.show{opacity:1}
 .search .inp{flex:none}
 .tabs button{font-size:.6875rem}
+#lres:empty,#lkres:empty{display:none}
 @media (prefers-reduced-motion: no-preference){ .bar b{transition:width .4s ease} }
 @media (max-width:380px){ .tiles{grid-template-columns:1fr 1fr} .steps button{font-size:.75rem} }
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <header class="top"><div class="brand">Exam <i>Coach</i></div><div class="sync" id="sync" aria-live="polite"></div></header>
@@ -566,6 +575,106 @@ var B=[
        {q:"If she ____ late, we will start without her.",o:["is","will be","was","be"],a:0,w:"if clause ใช้ Present Simple"}]}
 ];
 U=U.concat(B);
+/* ---------- Extra grammar units (original material, B1 to B2) ---------- */
+var B2=[
+{id:"b7",tr:"base",title:"Past Continuous & Past Perfect",th:"เล่าเรื่องในอดีตให้ละเอียดขึ้น",tag:"ระดับ B1–B2",
+ learn:{intro:"สองกาลนี้ใช้เล่าเรื่องในอดีตให้ละเอียดขึ้น Past Continuous บอกสิ่งที่กำลังเกิดอยู่ในช่วงเวลาหนึ่ง ส่วน Past Perfect บอกเหตุการณ์ที่เกิดก่อนอีกเหตุการณ์ในอดีต พบมากใน IELTS Speaking Part 2 และบทอ่านเล่าเรื่อง",
+  pts:[["I was cooking when the phone rang.","Past Continuous = was/were + V-ing บอกเหตุการณ์ที่กำลังดำเนินอยู่ แล้วมีเหตุการณ์สั้นๆ (Past Simple) แทรกเข้ามา"],
+       ["While she was studying, her brother was playing games.","while ใช้กับสองเหตุการณ์ที่เกิดพร้อมกัน ส่วน when มักตามด้วยเหตุการณ์สั้นที่แทรก"],
+       ["When I arrived, the meeting had already started.","Past Perfect = had + V3 บอกว่าเหตุการณ์นั้นเกิดก่อนอีกเหตุการณ์ในอดีต"],
+       ["after · before · by the time · already · just","คำที่มักใช้ร่วมกับ Past Perfect เพื่อบอกลำดับเวลา"]],
+  vocab:[["meanwhile","ในขณะเดียวกัน","Meanwhile, the team was preparing the room."],["suddenly","ทันใดนั้น","Suddenly, the lights went out."],["by the time","เมื่อถึงเวลาที่","By the time we arrived, it had started."],["earlier","ก่อนหน้านี้","I had spoken to him earlier."],["interrupt","ขัดจังหวะ","Sorry to interrupt you."],["witness","เป็นพยาน / เห็นเหตุการณ์","She witnessed the accident."]],
+  tip:"ถ้ามีสองเหตุการณ์ในอดีต เหตุการณ์ที่เกิดก่อนใช้ Past Perfect เหตุการณ์ที่เกิดทีหลังใช้ Past Simple แต่ถ้าเล่าเรียงตามลำดับเวลาอยู่แล้ว ใช้ Past Simple ทั้งหมดก็พอ"},
+ read:{title:"The Missed Train",text:"Last Friday, Lena was walking to the station when she realised she had left her ticket at home. By the time she got back, the train had already left. While she was waiting for the next one, she called her manager to say she would be late. He was having a meeting, so he did not answer. Lena was feeling worried, but when she finally arrived at the office, the meeting had just finished and nobody had noticed.",
+  qs:[{q:"What was Lena doing when she realised her mistake?",o:["Waiting for a train","Walking to the station","Calling her manager","Sitting in a meeting"],a:1,w:"'Lena was walking to the station when she realised…'"},
+      {q:"What had happened by the time she got back home?",o:["The meeting had finished","The train had left","Her manager had called","She had lost her phone"],a:1,w:"'By the time she got back, the train had already left'"},
+      {q:"Why did her manager not answer the phone?",o:["He was having a meeting.","His phone was broken.","He was on a train.","He was angry."],a:0,w:"'He was having a meeting, so he did not answer'"}]},
+ listen:{lines:[{s:"A",t:"Why were you late for the party?"},{s:"B",t:"I was driving there when the car broke down. Luckily, a man who was passing by stopped to help."},{s:"A",t:"Had you called a garage?"},{s:"B",t:"Yes, but by the time the mechanic arrived, the man had already fixed it!"},{s:"A",t:"Wow, lucky you!"}],
+  qs:[{q:"What was B doing when the car broke down?",o:["Walking","Driving","Calling a garage","Eating"],a:1,w:"'I was driving there when the car broke down'"},
+      {q:"Who stopped to help?",o:["A mechanic","A friend","A man passing by","A police officer"],a:2,w:"'a man who was passing by stopped to help'"},
+      {q:"What had happened by the time the mechanic arrived?",o:["The car was fixed","The party had ended","B had gone home","The road was closed"],a:0,w:"'the man had already fixed it'"}]},
+ write:{prompt:"Write 6 to 8 sentences about a memorable day in the past, such as a trip or an accident. Use at least two Past Continuous and two Past Perfect sentences.",min:45,
+  tips:["ฉากเหตุการณ์ใช้ Past Continuous: It was raining…","เหตุการณ์ที่แทรกเข้ามาใช้ Past Simple: when the bus stopped…","เหตุการณ์ที่เกิดก่อนใช้ had + V3","ใช้ meanwhile, suddenly, by the time เพิ่มลำดับเวลา"],
+  model:"Last summer I was travelling in the north when something unexpected happened. We were walking up a mountain path when it suddenly started to rain heavily. By the time we reached the village, we were completely wet, and our guide had already phoned the hotel. Meanwhile, the owner was preparing hot soup for us. We had never felt so tired! When we finally got to the hotel, the room had been heated and our clothes were dried by the fire. It was a day I will never forget."},
+ quiz:[{q:"I ____ TV when the lights went out.",o:["watched","was watching","had watched","watch"],a:1,w:"กำลังทำอยู่แล้วมีเหตุการณ์แทรก ใช้ Past Continuous"},
+       {q:"When we arrived at the cinema, the film ____.",o:["already started","has already started","had already started","was already starting"],a:2,w:"หนังเริ่มก่อนที่เราจะมาถึง ใช้ Past Perfect"},
+       {q:"While she ____ dinner, her friends were setting the table.",o:["cooked","was cooking","had cooked","cooks"],a:1,w:"while + สองเหตุการณ์ที่เกิดพร้อมกัน ใช้ Past Continuous ทั้งคู่"},
+       {q:"After she ____ the report, she sent it to her boss.",o:["had finished","finishes","finishing","is finished"],a:0,w:"after + เหตุการณ์ที่เกิดก่อน ใช้ Past Perfect"}]},
+
+{id:"b8",tr:"base",title:"Passive Voice",th:"ประโยคกรรมวาจก",tag:"ระดับ B1–B2",
+ learn:{intro:"Passive Voice เน้นสิ่งที่ถูกกระทำมากกว่าคนทำ พบมากใน TOEIC Part 5–7 (ประกาศ รายงาน) และ IELTS Writing Task 1 ตอนอธิบายขั้นตอนหรือกระบวนการ",
+  pts:[["The report was written by Anna.","โครงสร้าง: be + V3 (+ by คนทำ) โดย be เปลี่ยนตามกาลและประธาน"],
+       ["The office is cleaned every day. The office was cleaned yesterday.","Present ใช้ is/are + V3 · Past ใช้ was/were + V3"],
+       ["will be + V3 · has/have been + V3 · can be + V3","Future, Present Perfect และ Modal ในรูป Passive"],
+       ["My bag was stolen. The paper is cut and then packed.","ใช้ Passive เมื่อไม่รู้หรือไม่สำคัญว่าใครทำ หรือเมื่ออธิบายกระบวนการ"]],
+  vocab:[["process","กระบวนการ","The process takes three days."],["produce","ผลิต","Rice is produced in Thailand."],["install","ติดตั้ง","The software was installed yesterday."],["deliver","ส่งมอบ","Orders are delivered within a week."],["inspect","ตรวจสอบ","Every product is inspected."],["damage","ทำให้เสียหาย","The package was damaged."]],
+  tip:"ข้อสอบ TOEIC Part 5 มักให้เลือกระหว่าง V-ing, V3 และ V1 ถ้าหลัง be เป็นสิ่งของและไม่มี object ตามหลัง ให้นึกถึง Passive (be + V3)"},
+ read:{title:"How Chocolate Is Made",text:"Cocoa beans are grown in tropical countries and are harvested by hand. After the beans have been collected, they are dried in the sun for about a week. Then they are shipped to factories, where they are roasted and ground into a paste. Sugar and milk are added, and the mixture is heated and stirred for several hours. Finally, the chocolate is poured into moulds, cooled and wrapped.",
+  qs:[{q:"How are cocoa beans harvested?",o:["By machine","By hand","By boat","By robots"],a:1,w:"'are harvested by hand'"},
+      {q:"What happens to the beans after they are dried?",o:["They are shipped to factories.","They are poured into moulds.","They are wrapped.","They are grown."],a:0,w:"'Then they are shipped to factories'"},
+      {q:"What is the last step?",o:["The mixture is heated.","Sugar is added.","The chocolate is cooled and wrapped.","The beans are roasted."],a:2,w:"'Finally, the chocolate is poured into moulds, cooled and wrapped'"}]},
+ listen:{lines:[{s:"A",t:"Hello, I'm calling about my order. It was supposed to be delivered yesterday."},{s:"B",t:"I'm sorry. Let me check. Your parcel was sent on Monday, but it was damaged during transport."},{s:"A",t:"Will it be replaced?"},{s:"B",t:"Yes, a new one will be sent tomorrow, and the delivery fee will be refunded."}],
+  qs:[{q:"What problem does the caller have?",o:["The order was not delivered on time","The wrong item was sent","The price was too high","The shop was closed"],a:0,w:"'It was supposed to be delivered yesterday'"},
+      {q:"What happened to the parcel?",o:["It was lost.","It was damaged during transport.","It was stolen.","It was returned."],a:1,w:"'it was damaged during transport'"},
+      {q:"What will be refunded?",o:["The delivery fee","The whole order","Nothing","The new parcel"],a:0,w:"'the delivery fee will be refunded'"}]},
+ write:{prompt:"Describe how a product is made or how a process works, such as making tea, recycling paper or applying for a visa. Write 6 to 8 sentences using Passive Voice and sequence words such as first, then, after that, finally.",min:45,
+  tips:["ใช้ is/are + V3 สำหรับขั้นตอนในปัจจุบัน","ใช้ first, then, next, after that, finally เรียงลำดับ","ไม่ต้องใส่ผู้ทำถ้าไม่สำคัญ","ตรวจกริยาช่อง 3 ให้ถูก (grow → grown, make → made)"],
+  model:"Paper is made from wood. First, trees are cut down and the logs are taken to a factory. There, the bark is removed and the wood is cut into small pieces. Then the pieces are mixed with water and heated until they become a soft pulp. After that, the pulp is pressed flat and dried. Finally, the paper is cut into sheets and packed. Today, a lot of paper is also made from recycled materials."},
+ quiz:[{q:"The new library ____ by the mayor next month.",o:["will open","will be opened","opened","is opening"],a:1,w:"มี by the mayor บอกผู้ทำ และห้องสมุดเป็นผู้ถูกเปิด ใช้ will be + V3"},
+       {q:"All products ____ before they leave the factory.",o:["inspect","are inspected","are inspecting","inspecting"],a:1,w:"สินค้าถูกตรวจสอบ ใช้ are + V3"},
+       {q:"My wallet ____ yesterday.",o:["stole","was stolen","has stolen","is stolen"],a:1,w:"กระเป๋าถูกขโมย อดีตมี yesterday ใช้ was + V3"},
+       {q:"The report has already ____.",o:["written","been written","be written","writing"],a:1,w:"Present Perfect Passive = has/have been + V3"}]},
+
+{id:"b9",tr:"base",title:"Conditionals (0, 1, 2, 3)",th:"ประโยคเงื่อนไขทั้งสี่แบบ",tag:"ระดับ B1–B2",
+ learn:{intro:"ประโยคเงื่อนไขใช้พูดถึงสิ่งที่เป็นไปได้ สิ่งที่สมมติ และสิ่งที่ไม่เกิดขึ้นจริงในอดีต ใช้บ่อยใน IELTS Speaking Part 3 และ Writing Task 2",
+  pts:[["Type 0: If you heat ice, it melts.","ข้อเท็จจริงหรือกฎ: If + Present Simple, Present Simple"],
+       ["Type 1: If it rains, we will stay home.","เป็นไปได้ในอนาคต: If + Present Simple, will + กริยารูปเดิม"],
+       ["Type 2: If I had more time, I would learn French.","สมมติสิ่งที่ไม่จริงในปัจจุบัน: If + Past Simple, would + กริยารูปเดิม (If I were you,… ใช้ were ได้กับทุกประธาน)"],
+       ["Type 3: If I had studied, I would have passed.","เสียใจกับอดีตที่เปลี่ยนไม่ได้: If + Past Perfect, would have + V3"]],
+  vocab:[["unless","ถ้าไม่ (= if not)","Unless you hurry, you will be late."],["provided that","ตราบใดที่","You can go provided that you finish."],["suppose","สมมติว่า","Suppose you won a million baht."],["regret","เสียใจ","I regret not studying harder."],["otherwise","ไม่เช่นนั้น","Leave now, otherwise you'll miss it."],["in case","เผื่อ","Take an umbrella in case it rains."]],
+  tip:"หลัง if ไม่ใช้ will: If it rains ถูก, If it will rain ผิด และ would ไม่ใช้ในส่วน if เช่นกัน"},
+ read:{title:"Life Choices",text:"Marco often thinks about the past. If he had accepted the job abroad, he would have earned more money. However, he would not have met his wife. If he had a choice now, he would probably choose the same path. He tells his students that unless they make plans, they will not reach their goals. 'If you work steadily, you will succeed,' he says, 'but if you wait for luck, you may wait a very long time.'",
+  qs:[{q:"What would Marco have done if he had accepted the job?",o:["Earned more money","Met his wife","Stayed at home","Taught students"],a:0,w:"'he would have earned more money'"},
+      {q:"What would Marco do if he had a choice now?",o:["Choose a different path","Choose the same path","Leave his wife","Move abroad"],a:1,w:"'he would probably choose the same path'"},
+      {q:"What happens, according to Marco, if students do not make plans?",o:["They will succeed.","They will not reach their goals.","They will be lucky.","They will find a job."],a:1,w:"'unless they make plans, they will not reach their goals'"}]},
+ listen:{lines:[{s:"A",t:"If you could live anywhere, where would you live?"},{s:"B",t:"I would live in Japan. If I spoke Japanese, I would move there tomorrow."},{s:"A",t:"Why don't you study it?"},{s:"B",t:"I will, provided that I can find a cheap course. Unless I start soon, I'll never learn."}],
+  qs:[{q:"Where would B like to live?",o:["Japan","Korea","England","Singapore"],a:0,w:"'I would live in Japan'"},
+      {q:"Why can't B move there at the moment?",o:["B doesn't speak Japanese","B has no money","B has no job","B doesn't like it"],a:0,w:"'If I spoke Japanese, I would move there tomorrow' แปลว่าตอนนี้ยังพูดไม่ได้"},
+      {q:"Under what condition will B study Japanese?",o:["If friends join","If the course is cheap","If it is online","If there is time"],a:1,w:"'provided that I can find a cheap course'"}]},
+ write:{prompt:"Write 6 to 8 sentences about your dreams or regrets. Use at least one Type 1, one Type 2 and one Type 3 conditional sentence.",min:45,
+  tips:["Type 1 แผนที่เป็นไปได้: If I pass the test, I will…","Type 2 ความฝัน: If I won the lottery, I would…","Type 3 ความเสียดาย: If I had studied harder, I would have…","อย่าใช้ will หรือ would ในส่วน if"],
+  model:"If I pass the exam in March, I will apply to a university in Australia. If I had more savings, I would travel around Europe first, but that isn't possible now. I sometimes regret not learning English earlier. If I had started in high school, I would have reached a higher level by now. Anyway, unless I keep practising every day, I won't improve quickly, so I study for an hour each evening. If I could talk to my younger self, I would say, work hard from the beginning."},
+ quiz:[{q:"If it ____ tomorrow, we will cancel the picnic.",o:["rains","will rain","rained","would rain"],a:0,w:"Type 1: if + Present Simple"},
+       {q:"If I ____ you, I would take the job.",o:["am","was being","were","will be"],a:2,w:"Type 2 ใช้ were ในสำนวน If I were you"},
+       {q:"If she had left earlier, she ____ the train.",o:["would catch","would have caught","will catch","caught"],a:1,w:"Type 3: would have + V3"},
+       {q:"You won't pass ____ you study harder.",o:["if","unless","when","although"],a:1,w:"unless = if not"}]},
+
+{id:"b10",tr:"base",title:"Reported Speech",th:"การเล่าสิ่งที่คนอื่นพูด",tag:"ระดับ B1–B2",
+ learn:{intro:"Reported Speech ใช้เล่าสิ่งที่คนอื่นพูดไว้ พบใน TOEIC Part 7 (อีเมลหรือรายงานการประชุมที่อ้างถึงคำพูด) และใช้ใน IELTS Speaking เวลาเล่าเหตุการณ์",
+  pts:[["He said (that) he was tired.","'I am tired' → He said he was tired. ถอยกาลหนึ่งขั้น: am/is → was, will → would, can → could"],
+       ["She said, 'I bought a car.' → She said she had bought a car.","Past Simple ถอยเป็น Past Perfect"],
+       ["He asked me where I lived. She asked if I was ready.","คำถามเปลี่ยนเป็นประโยคบอกเล่า ไม่ใช้ do/does และใช้ if หรือ whether กับคำถามแบบ yes/no"],
+       ["now → then · today → that day · tomorrow → the next day · here → there","เปลี่ยนคำบอกเวลาและสถานที่ให้ตรงกับมุมมองของผู้เล่า"]],
+  vocab:[["announce","ประกาศ","The company announced a new plan."],["explain","อธิบาย","She explained the rules."],["mention","กล่าวถึง","He mentioned the deadline."],["suggest","เสนอแนะ","She suggested meeting earlier."],["admit","ยอมรับ","He admitted his mistake."],["promise","สัญญา","I promised to call back."]],
+  tip:"say ไม่ต้องตามด้วยคน (He said that…) แต่ tell ต้องมีคน (He told me that…) และถ้าสิ่งที่พูดยังเป็นจริงอยู่ตอนเล่า จะไม่ถอยกาลก็ได้"},
+ read:{title:"Meeting Notes",text:"At the Monday meeting, the director announced that the company would open a new branch in Chiang Mai. She explained that the plan had been approved the week before. A staff member asked whether the new branch would hire more people, and the director said that around twenty employees would be needed. She also mentioned that the opening date was not final, and she told everyone to wait for an email.",
+  qs:[{q:"What did the director announce?",o:["A new branch would open in Chiang Mai.","The company would close.","Salaries would rise.","A new director would start."],a:0,w:"'announced that the company would open a new branch in Chiang Mai'"},
+      {q:"When had the plan been approved?",o:["The week before","The same day","A month earlier","The day after"],a:0,w:"'the plan had been approved the week before'"},
+      {q:"What were staff told to do?",o:["Apply for jobs","Wait for an email","Visit Chiang Mai","Call the director"],a:1,w:"'she told everyone to wait for an email'"}]},
+ listen:{lines:[{s:"A",t:"Did you speak to Mr. Lee about the schedule?"},{s:"B",t:"Yes. He said that he couldn't come on Friday, so he suggested meeting on Monday instead."},{s:"A",t:"Did he say what time?"},{s:"B",t:"He told me that he would be free after two o'clock."},{s:"A",t:"Great, I'll book the room."}],
+  qs:[{q:"What did Mr. Lee suggest?",o:["Meeting on Monday","Meeting on Friday","Cancelling the meeting","Meeting online"],a:0,w:"'he suggested meeting on Monday instead'"},
+      {q:"When will Mr. Lee be free on that day?",o:["After two o'clock","Before noon","At nine","All day"],a:0,w:"'he would be free after two o'clock'"},
+      {q:"What will A do?",o:["Book the room","Call Mr. Lee","Send an email","Cancel the schedule"],a:0,w:"'I'll book the room'"}]},
+ write:{prompt:"Your friend told you: 'I'm moving to Chiang Mai next month because I got a new job. I will start on 1st December, and I can't take my cat.' Report what she said in 5 to 6 sentences, using said, told, and asked whether.",min:40,
+  tips:["ถอยกาล: am → was, will → would, can't → couldn't","เปลี่ยน next month → the following month","ใช้ told + คน และ said + that","คำถามใช้ asked if/whether + ประโยคบอกเล่า"],
+  model:"My friend told me that she was moving to Chiang Mai the following month because she had got a new job. She said that she would start on the first of December. She also said that she couldn't take her cat, so she asked me whether I could look after it. I told her that I would think about it. She mentioned that she would pay for the cat food."},
+ quiz:[{q:"She said, 'I am busy.' → She said that she ____ busy.",o:["is","was","has been","will be"],a:1,w:"am/is ถอยเป็น was"},
+       {q:"He said, 'I will call you.' → He said he ____ call me.",o:["will","would","can","has"],a:1,w:"will ถอยเป็น would"},
+       {q:"She asked me, 'Do you like coffee?' → She asked me ____ I liked coffee.",o:["do","that","if","what"],a:2,w:"คำถาม yes/no ใช้ if หรือ whether"},
+       {q:"He ____ me that the meeting was cancelled.",o:["said","told","spoke","asked"],a:1,w:"tell ตามด้วยคนที่ฟัง"}]}
+];
+U=U.concat(B2);
+
 
 /* ---------- Placement test: 12 questions, easy to hard ---------- */
 var PLACE=[
@@ -618,7 +727,7 @@ var MOCK={
 /* ---------- State ---------- */
 var LS="examcoach.v1";
 function emptyP(){return {v:2,done:{},scores:{},drafts:{},days:{},stats:{pq:0,pc:0},vocab:{},miss:{},mocks:[],place:null,exam:null,lib:{saved:{}},last:null,lastAt:0,updated:0};}
-var S={track:"toeic",tab:"learn",unit:null,step:"learn",rate:1,pr:null,rv:"vocab",vs:null,run:null,p:emptyP()};
+var S={g:null,track:"toeic",tab:"learn",unit:null,step:"learn",rate:1,pr:null,rv:"vocab",vs:null,run:null,p:emptyP()};
 var A={};          // per-step answer state (not persisted)
 var checks={};     // writing checklist ticks (not persisted)
 var sync="local";
@@ -864,9 +973,12 @@ var ICO={
   spk:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16.5 9a4 4 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/></svg>'
 };
 function bm(on){return '<svg viewBox="0 0 24 24" width="22" height="22" fill="'+(on?"currentColor":"none")+'" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>'}
+function cam(w){return "https://dictionary.cambridge.org/dictionary/english/"+encodeURIComponent(String(w).trim().toLowerCase().replace(/[^a-z0-9' -]/g,"").replace(/\s+/g,"-"))}
+var ICO_EXT='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+function camLink(w){return '<a class="ib" href="'+esc(cam(w))+'" target="_blank" rel="noopener noreferrer" aria-label="เปิด '+esc(w)+' ใน Cambridge Dictionary">'+ICO_EXT+'</a>'}
 function wrow(en,th,k,loc){
   var sv=isSaved(k);
-  return '<div class="wrow"><div style="min-width:0"><div class="en">'+esc(en)+'</div><div class="wth">'+esc(th)+'</div>'+(loc?'<div class="loc">'+esc(loc)+'</div>':'')+'</div><button class="ib" data-a="vlsay" data-t="'+esc(en)+'" aria-label="ฟังเสียง '+esc(en)+'">'+ICO.spk+'</button><button class="ib" data-a="vlstar" data-k="'+esc(k)+'" aria-pressed="'+sv+'" aria-label="บันทึกคำ '+esc(en)+'">'+bm(sv)+'</button></div>';
+  return '<div class="wrow"><div style="min-width:0"><div class="en">'+esc(en)+'</div><div class="wth">'+esc(th)+'</div>'+(loc?'<div class="loc">'+esc(loc)+'</div>':'')+'</div><button class="ib" data-a="vlsay" data-t="'+esc(en)+'" aria-label="ฟังเสียง '+esc(en)+'">'+ICO.spk+'</button>'+camLink(en)+'<button class="ib" data-a="vlstar" data-k="'+esc(k)+'" aria-pressed="'+sv+'" aria-label="บันทึกคำ '+esc(en)+'">'+bm(sv)+'</button></div>';
 }
 function secCount(s){var n=0;s.b.forEach(function(b){n+=b.w.length});return n}
 function secSaved(s){var n=0;s.b.forEach(function(b){b.w.forEach(function(w){if(isSaved(libKey(w[0])))n++})});return n}
@@ -907,7 +1019,7 @@ function lkHTML(){
   var r=lk.res; if(!r)return "";
   var k=libKey(r.word), sv=isSaved(k);
   var h='<div class="card sec"><div class="lbl">ความหมายจาก Claude</div><div class="row" style="justify-content:space-between;flex-wrap:nowrap;margin-top:6px"><div style="min-width:0"><div class="en" style="font-size:1.5rem;font-family:var(--f-read);font-weight:600;overflow-wrap:anywhere">'+esc(r.word)+'</div><div class="wth">'+esc((r.pos||"")+(r.ipa?" · "+r.ipa:""))+'</div></div><button class="ib" data-a="vlsay" data-t="'+esc(r.word)+'" aria-label="ฟังเสียง">'+ICO.spk+'</button></div>';
-  h+='<p style="margin-top:8px;font-weight:600">'+esc(r.th)+'</p>';
+  h+='<p style="margin-top:8px;font-weight:600">'+esc(r.th)+'</p><p class="small" style="margin-top:6px"><a href="'+esc(cam(r.word))+'" target="_blank" rel="noopener noreferrer">ดูใน Cambridge Dictionary ↗</a></p>';
   r.examples.forEach(function(x){h+='<p class="vex" style="text-align:left;margin-top:8px">'+esc(x.en)+'<br><span style="font-style:normal">'+esc(x.th)+'</span></p>'});
   if(r.synonyms.length)h+='<p class="small" style="margin-top:8px"><span class="muted">คำใกล้เคียง:</span> '+esc(r.synonyms.join(", "))+'</p>';
   if(r.note)h+='<p class="why" style="margin-top:8px">'+esc(r.note)+'</p>';
@@ -991,7 +1103,7 @@ function viewLib(){
   });
   h+='</section>';
   h+='<div class="card sec"><h2>ถามคำศัพท์ใดก็ได้</h2><p class="muted small">คำที่ยังไม่มีในคลัง พิมพ์ถาม Claude ได้ ได้ความหมายไทย การออกเสียง และประโยคตัวอย่าง</p>';
-  h+=sampleFn?'<div class="row" style="margin-top:10px;flex-wrap:nowrap"><label class="sr" for="lkq">คำที่ต้องการถาม</label><input class="inp" type="text" id="lkq" placeholder="เช่น negotiate" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn" data-a="vllk">ถาม</button></div>':'<p class="note" style="margin-top:8px">ฟีเจอร์นี้ใช้ไม่ได้ในบัญชีนี้</p>';
+  h+=sampleFn?'<div class="row" style="margin-top:10px;flex-wrap:nowrap"><label class="sr" for="lkq">คำที่ต้องการถาม</label><input class="inp" type="text" id="lkq" placeholder="เช่น negotiate" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn" data-a="vllk">ถาม</button></div>':'<p class="note" style="margin-top:8px">ฟีเจอร์นี้ใช้ไม่ได้ในเวอร์ชันนี้</p>';
   h+='</div></div></div>';
   return h;
 }
@@ -1125,6 +1237,7 @@ function viewUnit(){
     h+='<div class="card sec"><h2>หลักสำคัญ</h2>'+L.pts.map(function(p){return '<div class="pt"><p class="en"><span>'+esc(p[0])+'</span></p><p class="tn">'+esc(p[1])+'</p></div>'}).join("")+'</div>';
     h+='<div class="card sec"><h2>ศัพท์ที่ต้องรู้</h2><div class="vocab">'+L.vocab.map(function(v){return '<div class="vw"><b><span>'+esc(v[0])+'</span></b><span>'+esc(v[1])+'</span><em>'+esc(v[2])+'</em></div>'}).join("")+'</div></div>';
     h+='<div class="tipbox">'+esc(L.tip)+'</div>';
+    if(u.tr==="base")h+='<div class="card sec"><div class="lbl">อ่านเพิ่มเติม</div><p class="small" style="margin-top:6px">ดูคำอธิบายไวยากรณ์ภาษาอังกฤษเพิ่มเติมได้ที่เว็บ Cambridge (ภาษาอังกฤษ เปิดในแท็บใหม่)</p><p class="small" style="margin-top:6px"><a href="https://dictionary.cambridge.org/grammar/british-grammar/" target="_blank" rel="noopener noreferrer">Cambridge British Grammar ↗</a></p></div>';
     h+=isDone(u.id,"learn")?'<div class="row">'+nextBtn(u)+'</div>':'<div class="row"><button class="btn" data-a="learned">เรียนจบขั้นนี้แล้ว</button></div>';
   }else if(S.step==="read"){
     var R=u.read;
@@ -1206,9 +1319,124 @@ function pracView(mode){
   return h;
 }
 
+/* ---------- Vocabulary games (own code, own content) ---------- */
+var GAMES=[
+ ["match","จับคู่คำ","จับคู่ศัพท์อังกฤษกับความหมายไทย 6 คู่"],
+ ["pick","ทายความหมาย","เลือกคำแปลหรือคำศัพท์ที่ถูก 10 ข้อ"],
+ ["fill","เติมคำในประโยค","เลือกคำที่เติมช่องว่างได้ถูก 8 ข้อ"],
+ ["spell","สะกดคำ","ดูความหมายแล้วพิมพ์คำอังกฤษ 8 คำ"]
+];
+function gPool(){
+  var seen={},p=[];
+  U.forEach(function(u){u.learn.vocab.forEach(function(v){var k=v[0].toLowerCase(); if(!seen[k]){seen[k]=1;p.push({w:v[0],t:v[1],e:v[2]})}})});
+  Object.keys(LIBMAP).forEach(function(k){var m=LIBMAP[k]; if(m&&m.w&&!seen[k]){seen[k]=1;p.push({w:m.w,t:m.t,e:""})}});
+  return p;
+}
+function gSimple(w){return /^[A-Za-z][A-Za-z\-]{1,18}$/.test(w)}
+function gOpts(pool,item,key,n){
+  var o=[item],used={};used[item[key]]=1;
+  shuffle(pool).some(function(x){if(!used[x[key]]){used[x[key]]=1;o.push(x)} return o.length>=n});
+  return shuffle(o);
+}
+function gStart(k){
+  var pool=gPool(), g={k:k,i:0,sc:0,ans:null,done:false,qs:[],miss:0};
+  if(pool.length<8){toast("ยังมีคำศัพท์ไม่พอ ลองเปิดคลังศัพท์ให้โหลดก่อน");return}
+  if(k==="match"){
+    var it=shuffle(pool.filter(function(x){return x.t.length<=40})).slice(0,6);
+    g.items=it; g.left=it.map(function(x,i){return i}); g.right=shuffle(it.map(function(x,i){return i})); g.sel=null; g.dn={}; g.bad=-1;
+  }else if(k==="pick"){
+    g.qs=shuffle(pool.filter(function(x){return x.t.length<=40})).slice(0,10).map(function(x){
+      var rev=Math.random()<0.5, o=gOpts(pool.filter(function(y){return y.t.length<=40}),x,rev?"w":"t",4);
+      return {rev:rev,x:x,o:o,a:o.indexOf(x)};
+    });
+  }else if(k==="fill"){
+    var fp=pool.filter(function(x){return x.e&&gSimple(x.w)&&new RegExp("\\b"+x.w+"\\b","i").test(x.e)});
+    if(fp.length<8){toast("ยังมีประโยคตัวอย่างไม่พอ");return}
+    g.qs=shuffle(fp).slice(0,8).map(function(x){
+      var o=gOpts(fp,x,"w",4);
+      return {x:x,s:x.e.replace(new RegExp("\\b"+x.w+"\\b","i"),"_____"),o:o,a:o.indexOf(x)};
+    });
+  }else{
+    g.qs=shuffle(pool.filter(function(x){return gSimple(x.w)&&x.t.length<=40})).slice(0,8).map(function(x){return {x:x}});
+  }
+  S.g=g; render(); top();
+}
+function gFinish(){
+  var g=S.g; g.done=true;
+  var n=g.k==="match"?6:g.qs.length, sc=g.k==="match"?Math.max(0,6-g.miss):g.sc;
+  g.res={s:sc,n:n};
+  var key="g_"+g.k, old=S.p.scores[key], cur={s:sc,n:n,at:Date.now()};
+  g.prev=old?Math.round(old.s/old.n*100):null;
+  if(!old||(sc/n)>(old.s/old.n))S.p.scores[key]=cur;
+  S.p.days[dayNo()]=1; save(); render(); top();
+}
+function gMenu(){
+  var h='<div class="stack">';
+  h+='<div class="card"><div class="lbl">เกมฝึกศัพท์</div><p class="small muted" style="margin-top:6px">ใช้คำจากบทเรียนและคลังศัพท์ของแอป ถ้าอยากมีคำให้เล่นมากขึ้น เปิดแท็บคลังศัพท์ให้โหลดก่อน</p></div>';
+  GAMES.forEach(function(g){
+    var b=S.p.scores["g_"+g[0]];
+    h+='<div class="card"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><div style="min-width:0"><h2>'+esc(g[1])+'</h2><p class="small muted">'+esc(g[2])+'</p>'+(b?'<p class="small" style="margin-top:4px">คะแนนดีที่สุด '+b.s+'/'+b.n+'</p>':'')+'</div><button class="btn" data-a="gstart" data-g="'+g[0]+'">เล่น</button></div></div>';
+  });
+  h+='<div class="card"><div class="lbl">เกมเพิ่มเติม</div><p class="small" style="margin-top:6px">อยากเล่นเกมอื่นๆ เพิ่ม ลองดูเกมของ Cambridge (เว็บภายนอก เปิดในแท็บใหม่)</p><div class="row" style="margin-top:10px"><a class="btn alt" href="https://dictionary.cambridge.org/plus/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-flex;align-items:center">เปิด Cambridge Plus</a></div></div>';
+  return h+'</div>';
+}
+function gDone(g){
+  var p=Math.round(g.res.s/g.res.n*100);
+  var h='<div class="stack"><div class="card sec"><div class="lbl">จบเกม</div><div class="result" style="margin-top:8px"><div><b style="font-family:var(--f-head);font-size:2rem">'+g.res.s+'/'+g.res.n+'</b> <span class="muted">('+p+'%)</span></div></div>';
+  if(g.prev!==null)h+='<p class="small muted" style="margin-top:6px">คะแนนดีที่สุดก่อนหน้า '+g.prev+'%</p>';
+  h+='<div class="row" style="margin-top:14px"><button class="btn" data-a="gstart" data-g="'+g.k+'">เล่นอีกรอบ</button><button class="btn alt" data-a="gexit">กลับเมนูเกม</button></div></div></div>';
+  return h;
+}
+function viewGame(){
+  var g=S.g; if(!g)return gMenu();
+  if(g.done)return gDone(g);
+  var h='<div class="stack"><div class="row" style="justify-content:space-between"><button class="btn alt" data-a="gexit">'+ic("back")+' ออก</button>';
+  if(g.k==="match"){
+    h+='<span class="small muted">จับคู่แล้ว '+Object.keys(g.dn).length+' / 6 · พลาด '+g.miss+'</span></div>';
+    h+='<div class="card"><p class="small muted">แตะคำอังกฤษ แล้วแตะความหมายที่ตรงกัน</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px"><div style="display:grid;gap:8px;min-width:0">';
+    g.left.forEach(function(i){var d=g.dn[i]; h+='<button class="opt'+(d?' ok':(g.sel===i?' sel':''))+'" style="grid-template-columns:1fr" data-a="gml" data-i="'+i+'"'+(d?' disabled':'')+'><span style="overflow-wrap:anywhere">'+esc(g.items[i].w)+'</span></button>'});
+    h+='</div><div style="display:grid;gap:8px;min-width:0">';
+    g.right.forEach(function(i){var d=g.dn[i]; h+='<button class="opt'+(d?' ok':(g.bad===i?' no':''))+'" style="grid-template-columns:1fr" data-a="gmr" data-i="'+i+'"'+(d?' disabled':'')+'><span style="overflow-wrap:anywhere">'+esc(g.items[i].t)+'</span></button>'});
+    return h+'</div></div></div></div>';
+  }
+  h+='<span class="small muted">ข้อ '+(g.i+1)+' / '+g.qs.length+'</span></div>';
+  var q=g.qs[g.i];
+  h+='<div class="card"><div class="bar" style="margin:0 0 14px"><b style="width:'+(g.i/g.qs.length*100)+'%"></b></div>';
+  if(g.k==="pick"){
+    h+='<p class="pr-q">'+esc(q.rev?q.x.t:q.x.w)+'</p>'+(q.rev?'':'<p class="small muted">เลือกความหมายที่ถูก</p>');
+    if(!q.rev)h+='<div class="row" style="margin-top:6px"><button class="btn alt" data-a="vlsay" data-t="'+esc(q.x.w)+'">'+ICO.spk+' ฟังเสียง</button></div>';
+    h+='<div class="opts" style="margin-top:12px">'+q.o.map(function(o,oi){
+      var c=g.ans===null?'':(oi===q.a?' ok':(oi===g.ans?' no':''));
+      return '<button class="opt'+c+'" style="grid-template-columns:1fr" data-a="gans" data-i="'+oi+'"'+(g.ans!==null?' disabled':'')+'><span>'+esc(q.rev?o.w:o.t)+'</span></button>'}).join("")+'</div>';
+  }else if(g.k==="fill"){
+    h+='<p class="pr-q">'+esc(q.s)+'</p><p class="small muted">เลือกคำที่เติมได้ถูก</p><div class="opts" style="margin-top:12px">'+q.o.map(function(o,oi){
+      var c=g.ans===null?'':(oi===q.a?' ok':(oi===g.ans?' no':''));
+      return '<button class="opt'+c+'" style="grid-template-columns:1fr" data-a="gans" data-i="'+oi+'"'+(g.ans!==null?' disabled':'')+'><span>'+esc(o.w)+'</span></button>'}).join("")+'</div>';
+  }else{
+    var w=q.x.w, hint=w.charAt(0)+w.slice(1).replace(/[A-Za-z]/g," _").replace(/-/g,"-");
+    h+='<p class="pr-q">'+esc(q.x.t)+'</p><p class="small muted">'+w.length+' ตัวอักษร · ขึ้นต้นด้วย "'+esc(w.charAt(0))+'"</p>';
+    h+='<div class="row" style="margin-top:6px"><button class="btn alt" data-a="vlsay" data-t="'+esc(w)+'">'+ICO.spk+' ฟังเสียง</button></div>';
+    if(g.ans===null)h+='<div class="row" style="margin-top:12px;flex-wrap:nowrap"><input id="gin" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="พิมพ์คำตอบ" style="flex:1;min-width:0;font:inherit;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)"><button class="btn" data-a="gspell">ตอบ</button></div>';
+  }
+  if(g.ans!==null){
+    var okk=g.lastOk;
+    h+='<p class="why" style="margin-top:12px"><b>'+(okk?'ถูกต้อง':'ยังไม่ถูก')+'</b> · '+esc(q.x.w)+' = '+esc(q.x.t)+(q.x.e?'<br><i>'+esc(q.x.e)+'</i>':'')+'</p><div class="row" style="margin-top:12px"><button class="btn" data-a="gnext">'+(g.i===g.qs.length-1?"ดูผล":"ข้อต่อไป")+'</button></div>';
+  }
+  return h+'</div></div>';
+}
+function gSpell(){
+  var g=S.g,el=document.getElementById("gin"); if(!g||g.done||g.ans!==null||!el)return;
+  var v=el.value.trim().toLowerCase(); if(!v){toast("พิมพ์คำตอบก่อน");return}
+  var ok=v===g.qs[g.i].x.w.toLowerCase(); gAnswer(ok,1);
+}
+function gAnswer(ok,idx){
+  var g=S.g; g.ans=idx; g.lastOk=ok; if(ok)g.sc++; render();
+  if(g.k==="spell"){}
+}
+
 function viewReview(){
-  var h='<div class="stack"><div class="seg three" role="group" aria-label="โหมดทบทวน"><button data-a="rv" data-v="vocab" aria-pressed="'+(S.rv==="vocab")+'">ศัพท์</button><button data-a="rv" data-v="miss" aria-pressed="'+(S.rv==="miss")+'">ข้อที่ผิด</button><button data-a="rv" data-v="mix" aria-pressed="'+(S.rv==="mix")+'">ฝึกรวม</button></div>';
-  h+=S.rv==="vocab"?vocabView():pracView(S.rv);
+  var h='<div class="stack"><div class="seg four" role="group" aria-label="โหมดทบทวน"><button data-a="rv" data-v="vocab" aria-pressed="'+(S.rv==="vocab")+'">ศัพท์</button><button data-a="rv" data-v="miss" aria-pressed="'+(S.rv==="miss")+'">ข้อที่ผิด</button><button data-a="rv" data-v="mix" aria-pressed="'+(S.rv==="mix")+'">ฝึกรวม</button><button data-a="rv" data-v="game" aria-pressed="'+(S.rv==="game")+'">เกม</button></div>';
+  h+=S.rv==="vocab"?vocabView():S.rv==="game"?viewGame():pracView(S.rv);
   return h+'</div>';
 }
 
@@ -1364,7 +1592,7 @@ document.addEventListener("click",function(ev){
   var a=el.dataset.a;
   if(a==="ck")return;
   if(a==="track"){S.track=el.dataset.v; S.pr=null; render();}
-  else if(a==="tab"){if(S.run&&!S.run.done)return; stopSpeak(); S.run=null; S.tab=el.dataset.v; S.unit=null; render(); top();}
+  else if(a==="tab"){if(S.run&&!S.run.done)return; stopSpeak(); S.run=null; S.tab=el.dataset.v; S.unit=null; S.g=null; render(); top();}
   else if(a==="open"){stopSpeak(); S.tab="learn"; S.unit=el.dataset.u; S.step=el.dataset.s||"learn"; touch(S.unit,S.step); render(); top();}
   else if(a==="back"){stopSpeak(); S.unit=null; render(); top();}
   else if(a==="step"){stopSpeak(); S.step=el.dataset.s; touch(S.unit,S.step); render(); top();}
@@ -1413,7 +1641,7 @@ document.addEventListener("click",function(ev){
     render(); top();
   }
   else if(a==="pend"){S.pr=null; render();}
-  else if(a==="rv"){S.rv=el.dataset.v; render();}
+  else if(a==="rv"){S.rv=el.dataset.v; S.g=null; if(S.rv==="game"&&libState==="idle")loadLib(); render();}
   else if(a==="goreview"){S.tab="review"; S.rv=el.dataset.v; S.unit=null; render(); top();}
   else if(a==="vstart"){
     var cards=shuffle(dueWords()).slice(0,10); if(!cards.length)return;
@@ -1464,6 +1692,17 @@ document.addEventListener("click",function(ev){
   else if(a==="vlblk"){var lbi=+el.dataset.b, lcur=S.vl.open[lbi]===undefined?lbi===0:S.vl.open[lbi]; S.vl.open[lbi]=!lcur; render();}
   else if(a==="vlall"){LIB[S.vl.p].s[S.vl.s].b.forEach(function(b,i){S.vl.open[i]=el.dataset.v==="1"}); render();}
   else if(a==="vlsay"){say(el.dataset.t);}
+  else if(a==="gstart"){gStart(el.dataset.g);}
+  else if(a==="gexit"){S.g=null; render(); top();}
+  else if(a==="gml"){var G=S.g; if(!G||G.done)return; G.sel=+el.dataset.i; G.bad=-1; render();}
+  else if(a==="gmr"){var G2=S.g; if(!G2||G2.done||G2.sel===null)return; var ri=+el.dataset.i;
+    if(ri===G2.sel){G2.dn[ri]=1; G2.sel=null; G2.bad=-1; if(Object.keys(G2.dn).length>=6){gFinish();return}}
+    else{G2.miss++; G2.bad=ri; G2.sel=null}
+    render();}
+  else if(a==="gans"){var G3=S.g; if(!G3||G3.done||G3.ans!==null)return; var gi=+el.dataset.i; gAnswer(gi===G3.qs[G3.i].a,gi);}
+  else if(a==="gspell"){gSpell();}
+  else if(a==="gnext"){var G4=S.g; if(!G4)return; if(G4.i>=G4.qs.length-1){gFinish();return} G4.i++; G4.ans=null; render();}
+
   else if(a==="vlstar"){
     var lkey=el.dataset.k, lon=!isSaved(lkey);
     if(!setSaved(lkey,lon)){toast("บันทึกเต็มโควตา "+SAVE_CAP+" คำแล้ว เอาคำเก่าออกก่อน"); return;}
@@ -1503,7 +1742,7 @@ document.addEventListener("input",function(ev){
   }
   if(t.dataset&&t.dataset.a==="ck"){checks[t.id]=t.checked}
 });
-document.addEventListener("keydown",function(ev){if(ev.key==="Enter"&&ev.target&&ev.target.id==="lkq"){ev.preventDefault();lookup(ev.target.value)}});
+document.addEventListener("keydown",function(ev){if(ev.key==="Enter"&&ev.target&&ev.target.id==="lkq"){ev.preventDefault();lookup(ev.target.value)} if(ev.key==="Enter"&&ev.target&&ev.target.id==="gin"){ev.preventDefault();gSpell()}});
 document.addEventListener("change",function(ev){
   var t=ev.target;
   if(t.id==="spd"){S.rate=parseFloat(t.value)||1}
@@ -1522,4 +1761,5 @@ loadLib();
 })();
 </script>
 
-</body></html>
+</body>
+</html>
