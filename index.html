@@ -7,7 +7,7 @@
 <title>WORDVERSE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
 <style>
 :root{
@@ -57,6 +57,11 @@ p{margin:0}
 select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--tx2) 50%),linear-gradient(135deg,var(--tx2) 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}
 select.inp option{background:var(--bg2);color:var(--tx)}
 .hd-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.zh{font-family:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+.chip.detw.ok{border-color:var(--mint);background:rgba(94,234,212,.16);color:var(--tx)}
+.chip.detw.no{border-color:var(--bad);background:rgba(251,113,133,.16);color:var(--tx)}
+.chip.detw.no2{border-color:var(--amber,#fbbf24);border-style:dashed}
+.chip.detw[aria-pressed="true"]:not(.ok):not(.no){border-color:var(--blue);background:rgba(96,165,250,.18);color:var(--tx)}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:99px;background:var(--glass);border:1px solid var(--line);font-weight:600;font-size:.8125rem;white-space:nowrap}
 .pill i,.pill svg{width:16px;height:16px}
 .fire{color:#FB923C;animation:flame 1.4s ease-in-out infinite;transform-origin:50% 90%}
@@ -397,7 +402,7 @@ function buildWords(){
   VERBS.forEach(function(v){if(!seen["22|"+v.b])add({c:22,s:v.irr?0:1,w:v.b,ipa:"",pos:"verb",th:v.th,def:"V2 "+v.p+" · V3 "+v.pp+" · -ing "+v.ing+" · -s "+v.s,ex:"",exth:"",syn:[],lv:0})});
 }
 var LV=["","Beginner","Intermediate","Advanced"];
-var NAV=[["home","Home","layout-dashboard"],["vocabulary","Vocabulary","book-open"],["categories","Categories","layout-grid"],["verbs","Verb Forms","repeat"],["practice","Practice","layers"],["quiz","Quiz","list-checks"],["exam","Exam Prep","target"],["progress","My Progress","trending-up"],["favorites","Favorites","heart"],["settings","Settings","settings"]];
+var NAV=[["home","Home","layout-dashboard"],["vocabulary","Vocabulary","book-open"],["categories","Categories","layout-grid"],["verbs","Verb Forms","repeat"],["chinese","Chinese","languages"],["det","Duolingo Test","award"],["practice","Practice","layers"],["quiz","Quiz","list-checks"],["exam","Exam Prep","target"],["progress","My Progress","trending-up"],["favorites","Favorites","heart"],["settings","Settings","settings"]];
 var QTYPES=[["mc","Multiple Choice","See a word, pick its Thai meaning","circle-help"],["th2en","Thai to English","See a Thai meaning, pick the English word","languages"],["fill","Fill in the Blank","Complete the sentence with the right word","pencil"],["match","Word Matching","Pair English words with Thai meanings","link"],["listen","Listening","Hear a word, pick what you heard","volume-2"]];
 
 /* ---------------------------------------------------------------------
@@ -419,7 +424,7 @@ function pad(n){return n<10?"0"+n:""+n}
 function ymd(d){d=d||new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function reduced(){try{return matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){return false}}
 var KEY="wordverse.v1";
-function defData(){return {learned:{},fav:{},quiz:[],act:{},days:{},hist:[],recent:[],vb:{best:{}},ex:{track:"toeic",done:{},scores:{},drafts:{},mocks:[],place:null,date:"",miss:{}},set:{name:"Learner",goal:5,accent:"en-US",rate:1,collapsed:false,slots:true}}}
+function defData(){return {learned:{},fav:{},quiz:[],act:{},days:{},hist:[],recent:[],vb:{best:{}},zh:{learned:{},best:{}},det:{best:{}},ex:{track:"toeic",done:{},scores:{},drafts:{},mocks:[],place:null,date:"",miss:{}},set:{name:"Learner",goal:5,accent:"en-US",rate:1,collapsed:false,slots:true}}}
 function loadData(){
   var d=defData();
   try{var t=localStorage.getItem(KEY); if(t){var p=JSON.parse(t); Object.keys(d).forEach(function(k){if(p[k]!==undefined)d[k]=(k==="set")?Object.assign(d.set,p.set):p[k]})}}catch(e){}
@@ -715,7 +720,7 @@ pages.progress=function(){
   return pageTitle("My Progress","Your learning analytics")+'<div class="gap">'+
    '<section class="card welcome" style="grid-template-columns:1fr 1fr"><div style="align-self:center"><span class="tag">Level '+lv.n+' · '+lv.t+'</span><h2 style="font-size:1.6rem;margin:8px 0">'+lc+' of '+tot+' words learned</h2><p class="muted">Every 5 learned words raises your level.</p><div style="margin-top:14px">'+bar(Math.round(lc/tot*100))+'</div></div>'+slot("achievement","Achievement","hero")+'</section>'+
    '<div class="g4"><div class="card"><div class="lbl">Total vocabulary</div><div class="big" style="margin-top:8px">'+tot+'</div></div><div class="card"><div class="lbl">Words learned</div><div class="big" style="margin-top:8px;color:var(--mint)">'+lc+'</div></div><div class="card"><div class="lbl">Remaining</div><div class="big" style="margin-top:8px">'+(tot-lc)+'</div></div><div class="card"><div class="lbl">Daily streak</div><div class="big" style="margin-top:8px"><span class="fire" style="display:inline-grid;vertical-align:-3px">'+ic("flame")+'</span> '+st+'</div></div></div>'+
-   examProg()+'<div class="g2"><div class="card"><div class="lbl">Weekly learning activity</div>'+wkb+'</div><div class="card"><div class="lbl">Quiz scores (%)</div>'+qb+'</div></div>'+
+   examProg()+(typeof zhProg==="function"?zhProg():"")+(typeof detProg==="function"?detProg():"")+'<div class="g2"><div class="card"><div class="lbl">Weekly learning activity</div>'+wkb+'</div><div class="card"><div class="lbl">Quiz scores (%)</div>'+qb+'</div></div>'+
    '<div class="g2"><div class="card"><div class="lbl">Category progress</div><div style="margin-top:8px">'+ch+'</div></div><div class="card"><div class="lbl">Learning history</div><div style="margin-top:8px">'+hist+'</div></div></div></div>';
 };
 
@@ -1748,6 +1753,338 @@ document.addEventListener("keydown",function(e){
   if(e.key==="Enter"&&e.target&&e.target.id==="vbin"){e.preventDefault(); vbAnswer(false)}
   else if(e.key==="Enter"&&VB.run&&VB.run.res&&!VB.run.done&&S.page==="verbs"&&e.target.tagName!=="BUTTON"){e.preventDefault(); var b=document.querySelector('[data-a="vb-next"]'); if(b)b.click()}
 });
+
+/* =====================================================================
+   CHINESE FOR BEGINNERS (Mandarin, simplified characters, pinyin)
+   HSK 1 level vocabulary written for this app. Row: topic|hanzi|pinyin|Thai|English
+   ===================================================================== */
+var ZH_RAW=("Basics|你好|nǐ hǎo|สวัสดี|hello;Basics|谢谢|xièxie|ขอบคุณ|thank you;Basics|不客气|bú kèqi|ไม่เป็นไร ยินดี|you're welcome;Basics|对不起|duìbuqǐ|ขอโทษ|sorry;Basics|没关系|méi guānxi|ไม่เป็นไร|it doesn't matter;Basics|再见|zàijiàn|ลาก่อน|goodbye;Basics|请|qǐng|กรุณา เชิญ|please;Basics|好|hǎo|ดี|good;Basics|是|shì|เป็น คือ|to be;Basics|不|bù|ไม่|not;Basics|没|méi|ไม่ (ไม่มี ยังไม่ได้)|not (have)|;Basics|有|yǒu|มี|to have;Basics|很|hěn|มาก|very;Basics|太|tài|เกินไป มาก|too;Basics|都|dōu|ทั้งหมด|all;Basics|也|yě|ก็ เหมือนกัน|also;Basics|和|hé|และ|and;Basics|在|zài|อยู่ที่ กำลัง|at, in;Basics|对|duì|ถูกต้อง|correct;"+
+"Pronouns|我|wǒ|ฉัน|I, me;Pronouns|你|nǐ|คุณ เธอ|you;Pronouns|他|tā|เขา (ผู้ชาย)|he;Pronouns|她|tā|เธอ (ผู้หญิง)|she;Pronouns|我们|wǒmen|พวกเรา|we;Pronouns|你们|nǐmen|พวกคุณ|you (plural);Pronouns|他们|tāmen|พวกเขา|they;Pronouns|这|zhè|นี่ อันนี้|this;Pronouns|那|nà|นั่น อันนั้น|that;"+
+"Numbers|零|líng|ศูนย์|zero;Numbers|一|yī|หนึ่ง|one;Numbers|二|èr|สอง|two;Numbers|三|sān|สาม|three;Numbers|四|sì|สี่|four;Numbers|五|wǔ|ห้า|five;Numbers|六|liù|หก|six;Numbers|七|qī|เจ็ด|seven;Numbers|八|bā|แปด|eight;Numbers|九|jiǔ|เก้า|nine;Numbers|十|shí|สิบ|ten;Numbers|百|bǎi|ร้อย|hundred;Numbers|个|gè|ลักษณนามทั่วไป (ชิ้น อัน คน)|general measure word;Numbers|岁|suì|ขวบ ปี (อายุ)|years old;Numbers|块|kuài|หยวน (ภาษาพูด)|yuan (spoken);Numbers|本|běn|เล่ม (ลักษณนามหนังสือ)|measure word for books;Numbers|几|jǐ|กี่ (จำนวนน้อย)|how many;Numbers|多少|duōshao|เท่าไร กี่|how much, how many;"+
+"People|爸爸|bàba|พ่อ|dad;People|妈妈|māma|แม่|mom;People|儿子|érzi|ลูกชาย|son;People|女儿|nǚ'ér|ลูกสาว|daughter;People|朋友|péngyou|เพื่อน|friend;People|同学|tóngxué|เพื่อนร่วมชั้น|classmate;People|老师|lǎoshī|ครู|teacher;People|学生|xuésheng|นักเรียน|student;People|医生|yīshēng|หมอ|doctor;People|先生|xiānsheng|คุณ (ผู้ชาย) สามี|Mr., sir;People|小姐|xiǎojiě|คุณ (ผู้หญิง) นางสาว|Miss;People|人|rén|คน|person;People|名字|míngzi|ชื่อ|name;"+
+"Time|今天|jīntiān|วันนี้|today;Time|明天|míngtiān|พรุ่งนี้|tomorrow;Time|昨天|zuótiān|เมื่อวาน|yesterday;Time|现在|xiànzài|ตอนนี้|now;Time|年|nián|ปี|year;Time|月|yuè|เดือน|month;Time|号|hào|วันที่|day of the month;Time|星期|xīngqī|สัปดาห์ วัน (ในสัปดาห์)|week;Time|点|diǎn|นาฬิกา โมง|o'clock;Time|分钟|fēnzhōng|นาที|minute;Time|上午|shàngwǔ|ช่วงเช้า|morning;Time|中午|zhōngwǔ|เที่ยงวัน|noon;Time|下午|xiàwǔ|ช่วงบ่าย|afternoon;Time|晚上|wǎnshang|ช่วงเย็น กลางคืน|evening;Time|时候|shíhou|เวลา ตอนที่|time, moment;"+
+"Places|中国|Zhōngguó|ประเทศจีน|China;Places|泰国|Tàiguó|ประเทศไทย|Thailand;Places|北京|Běijīng|ปักกิ่ง|Beijing;Places|家|jiā|บ้าน|home;Places|学校|xuéxiào|โรงเรียน|school;Places|医院|yīyuàn|โรงพยาบาล|hospital;Places|商店|shāngdiàn|ร้านค้า|shop;Places|饭店|fàndiàn|ร้านอาหาร โรงแรม|restaurant, hotel;Places|里|lǐ|ข้างใน|inside;Places|前面|qiánmian|ข้างหน้า|in front;Places|后面|hòumian|ข้างหลัง|behind;Places|上|shàng|บน|up, above;Places|下|xià|ล่าง|down, below;Places|哪儿|nǎr|ที่ไหน|where;"+
+"Food|水|shuǐ|น้ำ|water;Food|茶|chá|ชา|tea;Food|米饭|mǐfàn|ข้าวสวย|cooked rice;Food|菜|cài|อาหาร กับข้าว ผัก|dish, vegetable;Food|水果|shuǐguǒ|ผลไม้|fruit;Food|苹果|píngguǒ|แอปเปิล|apple;Food|杯子|bēizi|แก้ว ถ้วย|cup, glass;"+
+"Things|书|shū|หนังสือ|book;Things|桌子|zhuōzi|โต๊ะ|table;Things|椅子|yǐzi|เก้าอี้|chair;Things|衣服|yīfu|เสื้อผ้า|clothes;Things|钱|qián|เงิน|money;Things|电话|diànhuà|โทรศัพท์|telephone;Things|电脑|diànnǎo|คอมพิวเตอร์|computer;Things|电视|diànshì|โทรทัศน์|television;Things|电影|diànyǐng|ภาพยนตร์|movie;Things|出租车|chūzūchē|แท็กซี่|taxi;Things|汉语|Hànyǔ|ภาษาจีน|Chinese language;Things|字|zì|ตัวอักษร|character;Things|东西|dōngxi|ของ สิ่งของ|thing;Things|狗|gǒu|สุนัข|dog;Things|猫|māo|แมว|cat;Things|天气|tiānqì|อากาศ|weather;Things|雨|yǔ|ฝน|rain;"+
+"Verbs|去|qù|ไป|go;Verbs|来|lái|มา|come;Verbs|回|huí|กลับ|return;Verbs|看|kàn|ดู มอง|look, watch;Verbs|看见|kànjiàn|เห็น|see;Verbs|听|tīng|ฟัง|listen;Verbs|说|shuō|พูด|speak;Verbs|读|dú|อ่าน (ออกเสียง)|read aloud;Verbs|写|xiě|เขียน|write;Verbs|吃|chī|กิน|eat;Verbs|喝|hē|ดื่ม|drink;Verbs|买|mǎi|ซื้อ|buy;Verbs|做|zuò|ทำ|do, make;Verbs|坐|zuò|นั่ง โดยสาร|sit, travel by;Verbs|住|zhù|อาศัย พัก|live, stay;Verbs|开|kāi|เปิด ขับ|open, drive;Verbs|给|gěi|ให้|give;Verbs|叫|jiào|ชื่อ เรียก|be called;Verbs|学习|xuéxí|เรียน ศึกษา|study;Verbs|工作|gōngzuò|ทำงาน งาน|work;Verbs|睡觉|shuìjiào|นอนหลับ|sleep;Verbs|认识|rènshi|รู้จัก (คน)|know (a person);Verbs|喜欢|xǐhuan|ชอบ|like;Verbs|爱|ài|รัก|love;Verbs|想|xiǎng|อยาก คิด คิดถึง|want, think;Verbs|会|huì|เป็น (มีทักษะ)|can (learned skill);Verbs|能|néng|สามารถ|can (ability);Verbs|下雨|xià yǔ|ฝนตก|rain (verb);Verbs|打电话|dǎ diànhuà|โทรศัพท์|make a phone call;"+
+"Adjectives|大|dà|ใหญ่|big;Adjectives|小|xiǎo|เล็ก|small;Adjectives|多|duō|มาก เยอะ|many;Adjectives|少|shǎo|น้อย|few;Adjectives|冷|lěng|หนาว เย็น|cold;Adjectives|热|rè|ร้อน|hot;Adjectives|高兴|gāoxìng|ดีใจ มีความสุข|happy;Adjectives|漂亮|piàoliang|สวย|beautiful;"+
+"Questions|吗|ma|ไหม (คำลงท้ายคำถาม)|question particle;Questions|呢|ne|ล่ะ (คำลงท้าย)|and you? (particle);Questions|的|de|ของ (แสดงความเป็นเจ้าของ)|possessive particle;Questions|了|le|แล้ว (คำลงท้าย)|completed-action particle;Questions|谁|shéi|ใคร|who;Questions|什么|shénme|อะไร|what;Questions|哪|nǎ|ไหน|which;Questions|怎么|zěnme|อย่างไร|how;Questions|怎么样|zěnmeyàng|เป็นอย่างไร|how about").split(";").map(function(r,i){var p=r.split("|");return {id:i+1,t:p[0],h:p[1],py:p[2],th:p[3],en:p[4]}});
+var ZH_PHR=("你好!|nǐ hǎo|สวัสดี;早上好|zǎoshang hǎo|สวัสดีตอนเช้า;晚上好|wǎnshang hǎo|สวัสดีตอนเย็น;晚安|wǎn'ān|ราตรีสวัสดิ์;你好吗?|nǐ hǎo ma|สบายดีไหม;我很好|wǒ hěn hǎo|ฉันสบายดี;你叫什么名字?|nǐ jiào shénme míngzi|คุณชื่ออะไร;我叫……|wǒ jiào …|ฉันชื่อ…;很高兴认识你|hěn gāoxìng rènshi nǐ|ยินดีที่ได้รู้จัก;你是哪国人?|nǐ shì nǎ guó rén|คุณเป็นคนชาติไหน;我是泰国人|wǒ shì Tàiguó rén|ฉันเป็นคนไทย;你会说汉语吗?|nǐ huì shuō Hànyǔ ma|คุณพูดภาษาจีนได้ไหม;我会说一点儿汉语|wǒ huì shuō yìdiǎnr Hànyǔ|ฉันพูดภาษาจีนได้นิดหน่อย;请再说一遍|qǐng zài shuō yí biàn|กรุณาพูดอีกครั้ง;我不明白|wǒ bù míngbai|ฉันไม่เข้าใจ;这个多少钱?|zhège duōshao qián|อันนี้ราคาเท่าไร;太贵了|tài guì le|แพงเกินไป;便宜一点儿|piányi yìdiǎnr|ถูกลงหน่อย;我想喝水|wǒ xiǎng hē shuǐ|ฉันอยากดื่มน้ำ;我要这个|wǒ yào zhège|ฉันเอาอันนี้;洗手间在哪儿?|xǐshǒujiān zài nǎr|ห้องน้ำอยู่ที่ไหน;谢谢你的帮助|xièxie nǐ de bāngzhù|ขอบคุณที่ช่วยเหลือ;对不起,我迟到了|duìbuqǐ, wǒ chídào le|ขอโทษ ฉันมาสาย;现在几点?|xiànzài jǐ diǎn|ตอนนี้กี่โมง;今天星期几?|jīntiān xīngqī jǐ|วันนี้วันอะไร;我喜欢吃中国菜|wǒ xǐhuan chī Zhōngguó cài|ฉันชอบกินอาหารจีน;祝你生日快乐|zhù nǐ shēngrì kuàilè|สุขสันต์วันเกิด;新年快乐|xīnnián kuàilè|สุขสันต์วันปีใหม่;明天见|míngtiān jiàn|พรุ่งนี้เจอกัน").split(";").map(function(r){var p=r.split("|");return {h:p[0],py:p[1],th:p[2]}});
+var ZH_TONES=[["mā","妈","แม่","Tone 1 · high and level"],["má","麻","ป่านกัญชา","Tone 2 · rising"],["mǎ","马","ม้า","Tone 3 · low, dipping"],["mà","骂","ด่า","Tone 4 · sharp falling"],["ma","吗","(คำลงท้ายคำถาม)","Neutral · light and short"]];
+var ZH_SOUNDS=[["b p m f",[["bā","八"],["pà","怕"],["mā","妈"],["fā","发"]]],["d t n l",[["dà","大"],["tā","他"],["nà","那"],["lái","来"]]],["g k h",[["gē","哥"],["kě","可"],["hē","喝"]]],["j q x",[["jī","鸡"],["qī","七"],["xī","西"]]],["zh ch sh r",[["zhōng","中"],["chī","吃"],["shì","是"],["rén","人"]]],["z c s",[["zì","字"],["cí","词"],["sì","四"]]],["y w",[["yī","一"],["wǔ","五"]]]];
+var ZH_FINALS=[["a","爸","bà"],["o","我","wǒ"],["e","喝","hē"],["i","一","yī"],["u","五","wǔ"],["ü","女","nǚ"],["ai","爱","ài"],["ei","美","měi"],["ao","好","hǎo"],["ou","九","jiǔ"],["an","看","kàn"],["en","很","hěn"],["ang","上","shàng"],["eng","请","qǐng"],["ong","中","zhōng"]];
+var ZH_TOPICS=[]; ZH_RAW.forEach(function(w){if(ZH_TOPICS.indexOf(w.t)<0)ZH_TOPICS.push(w.t)});
+var ZH={tab:"words",topic:"all",q:"",n:30,pin:true,quiz:null,qtype:"h2t"};
+function zhL(id){return !!S.d.zh.learned[id]}
+function sayZh(t){
+  if(!("speechSynthesis" in window)||typeof SpeechSynthesisUtterance==="undefined"){toast("This browser does not support speech playback.","warn");return}
+  try{
+    var vs=speechSynthesis.getVoices()||[], v=vs.filter(function(x){return /^zh[-_](CN|Hans)/i.test(x.lang)})[0]||vs.filter(function(x){return /^zh/i.test(x.lang)})[0];
+    if(vs.length&&!v)toast("This device may not have a Chinese voice installed.","warn");
+    var u=new SpeechSynthesisUtterance(t); u.lang="zh-CN"; u.rate=Math.min(S.d.set.rate,1); if(v)u.voice=v; speechSynthesis.cancel(); speechSynthesis.speak(u);
+  }catch(e){toast("Could not play audio.","warn")}
+}
+function zhBtn(t){return '<button class="mini" data-a="zh-say" data-t="'+esc(t)+'" aria-label="Play Chinese audio" data-tip="Listen">'+ic("volume-2")+'</button>'}
+function zhList(){
+  var q=ZH.q.trim().toLowerCase();
+  return ZH_RAW.filter(function(w){return (ZH.topic==="all"||w.t===ZH.topic)&&(!q||w.h.indexOf(q)>=0||w.py.toLowerCase().indexOf(q)>=0||w.th.indexOf(q)>=0||w.en.toLowerCase().indexOf(q)>=0)});
+}
+function zhRows(){
+  var list=zhList(), show=list.slice(0,ZH.n);
+  if(!list.length)return '<div class="card muted">No words match.</div>';
+  return '<p class="muted small" style="margin:12px 0">'+list.length+' words</p><div class="gauto" style="grid-template-columns:repeat(auto-fill,minmax(230px,1fr))">'+show.map(function(w){
+    return '<div class="card hover" style="display:grid;gap:6px"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><span class="zh" style="font-size:2.25rem;font-weight:700;line-height:1.2;overflow-wrap:anywhere">'+esc(w.h)+'</span><div class="row" style="flex-wrap:nowrap;gap:4px">'+zhBtn(w.h)+'<button class="mini'+(zhL(w.id)?' ok':'')+'" data-a="zh-lrn" data-id="'+w.id+'" aria-pressed="'+zhL(w.id)+'" aria-label="Mark as learned" data-tip="Mark as learned">'+ic("circle-check")+'</button></div></div>'+(ZH.pin?'<div class="ipa" style="font-weight:600">'+esc(w.py)+'</div>':'<div class="muted small">pinyin hidden</div>')+'<div style="font-weight:700;color:var(--mint)">'+esc(w.th)+'</div><div class="muted small">'+esc(w.en)+' · '+esc(w.t)+'</div></div>'}).join("")+'</div>'+(list.length>show.length?'<div class="row" style="justify-content:center;margin-top:18px"><button class="btn ghost" data-a="zh-more">Show more ('+(list.length-show.length)+' left)</button></div>':'');
+}
+function zhWords(){
+  var lc=Object.keys(S.d.zh.learned).length, tot=ZH_RAW.length;
+  var h='<div class="card"><div class="row" style="justify-content:space-between"><span class="small muted">'+lc+' / '+tot+' words learned</span><button class="chip" data-a="zh-pin" aria-pressed="'+ZH.pin+'">Show pinyin</button></div><div style="margin:10px 0">'+bar(Math.round(lc/tot*100))+'</div><div class="srch" style="max-width:none"><i data-lucide="search"></i><input class="inp" id="zhq" type="search" value="'+esc(ZH.q)+'" placeholder="Search 汉字, pinyin, Thai or English" aria-label="Search Chinese words" autocomplete="off"></div><div class="chips"><button class="chip" data-a="zh-topic" data-v="all" aria-pressed="'+(ZH.topic==="all")+'">All</button>'+ZH_TOPICS.map(function(t){return '<button class="chip" data-a="zh-topic" data-v="'+t+'" aria-pressed="'+(ZH.topic===t)+'">'+t+'</button>'}).join("")+'</div></div><div id="zhres">'+zhRows()+'</div>';
+  return h;
+}
+function zhPhrases(){
+  return '<div class="row" style="margin-bottom:12px"><button class="chip" data-a="zh-pin" aria-pressed="'+ZH.pin+'">Show pinyin</button></div><div class="card">'+ZH_PHR.map(function(p){return '<div class="prow"><div style="min-width:0"><div class="zh" style="font-size:1.25rem;font-weight:700">'+esc(p.h)+'</div>'+(ZH.pin?'<div class="ipa small">'+esc(p.py)+'</div>':'')+'<div class="small" style="color:var(--mint)">'+esc(p.th)+'</div></div><span style="margin-left:auto">'+zhBtn(p.h.replace(/……/g,""))+'</span></div>'}).join("")+'</div>';
+}
+function zhPinyin(){
+  var h='<div class="gap"><div class="card"><div class="lbl">The four tones (plus neutral)</div><p class="small muted" style="margin:8px 0 12px">The same syllable “ma” changes meaning with the tone. Tap to listen and copy the shape of the pitch.</p><div class="gauto" style="grid-template-columns:repeat(auto-fill,minmax(170px,1fr))">'+ZH_TONES.map(function(t){return '<div class="card" style="padding:14px;display:grid;gap:4px"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><span class="zh" style="font-size:2rem;font-weight:700">'+t[1]+'</span>'+zhBtn(t[1])+'</div><div class="ipa" style="font-weight:700;font-size:1.125rem">'+t[0]+'</div><div class="small" style="color:var(--mint)">'+esc(t[2])+'</div><div class="small muted">'+esc(t[3])+'</div></div>'}).join("")+'</div></div>';
+  h+='<div class="card"><div class="lbl">Initials (consonants)</div>'+ZH_SOUNDS.map(function(g){return '<div style="padding:10px 0;border-top:1px solid var(--line)"><b style="font-size:1.0625rem">'+g[0]+'</b><div class="row" style="margin-top:8px">'+g[1].map(function(x){return '<button class="chip" data-a="zh-say" data-t="'+x[1]+'"><span class="zh">'+x[1]+'</span> <span class="ipa">'+x[0]+'</span></button>'}).join("")+'</div></div>'}).join("")+'</div>';
+  h+='<div class="card"><div class="lbl">Finals (vowel endings)</div><div class="row" style="margin-top:10px">'+ZH_FINALS.map(function(f){return '<button class="chip" data-a="zh-say" data-t="'+f[1]+'"><b>'+f[0]+'</b> · <span class="zh">'+f[1]+'</span> <span class="ipa">'+f[2]+'</span></button>'}).join("")+'</div></div>';
+  h+='<div class="card"><div class="lbl">Handy rules</div><ul style="margin:10px 0 0;padding-left:20px;display:grid;gap:8px" class="small"><li><b>Two 3rd tones in a row:</b> the first becomes 2nd tone. 你好 is written nǐ hǎo but said ní hǎo.</li><li><b>不 (bù)</b> before a 4th tone becomes <b>bú</b>: 不是 bú shì, 不客气 bú kèqi.</li><li><b>一 (yī)</b> before a 4th tone becomes <b>yí</b> (一个 yí ge); before tones 1, 2 or 3 it becomes <b>yì</b> (一天 yì tiān).</li><li><b>Counting 11 to 99:</b> say the tens, then the units. 十一 shíyī = 11, 二十 èrshí = 20, 二十三 èrshísān = 23, 九十九 jiǔshíjiǔ = 99.</li><li><b>Days of the week:</b> 星期一 (Monday) to 星期六 (Saturday), and Sunday is 星期日 or 星期天.</li></ul></div></div>';
+  return h;
+}
+/* Quiz */
+function zhBuild(type){
+  if(type==="listen"&&!("speechSynthesis" in window)){toast("Listening needs speech playback, which this browser lacks.","warn");return}
+  var pool=ZH_RAW.filter(function(w){return w.h.length<=4});
+  var qs=shuffle(pool).slice(0,10).map(function(w){
+    var o=shuffle([w].concat(shuffle(pool.filter(function(x){return x.id!==w.id&&x.th!==w.th&&x.h!==w.h})).slice(0,3)));
+    return {id:w.id,o:o.map(function(x){return x.id}),a:o.indexOf(w)};
+  });
+  ZH.quiz={type:type,qs:qs,i:0,score:0,ans:null,wrong:[],done:false};
+}
+function zhQuiz(){
+  var Q=ZH.quiz;
+  if(!Q){
+    var best=S.d.zh.best, T=[["h2t","汉字 → Thai","See the character, pick its meaning"],["t2h","Thai → 汉字","See the meaning, pick the character"],["listen","Listening","Hear a word, pick the character"]];
+    return '<div class="gap"><div class="g3" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">'+T.map(function(t){return '<button class="qtype" data-a="zh-qtype" data-t="'+t[0]+'" aria-pressed="'+(ZH.qtype===t[0])+'"><b>'+t[1]+'</b><span class="muted small">'+t[2]+'</span>'+(best[t[0]]?'<span class="small" style="color:var(--mint)">Best '+best[t[0]].s+'/'+best[t[0]].n+'</span>':'')+'</button>'}).join("")+'</div><div><button class="btn" data-a="zh-qstart">'+ic("play")+'Start quiz</button></div></div>';
+  }
+  if(Q.done){
+    var pct=Math.round(Q.score/Q.qs.length*100);
+    return '<div class="card empty" style="max-width:640px">'+slot("quiz","Chinese quiz","empty")+'<div class="score">'+Q.score+' / '+Q.qs.length+'</div><h3>'+pct+'%</h3><div class="row" style="justify-content:center"><button class="btn" data-a="zh-qstart">'+ic("rotate-ccw")+'Retry</button><button class="btn ghost" data-a="zh-qquit">New quiz</button></div></div>'+(Q.wrong.length?'<div class="sech" style="margin-top:18px"><h2>Review</h2></div><div class="card" style="max-width:640px">'+Q.wrong.map(function(id){var w=ZH_RAW[id-1];return '<div class="prow"><span class="zh" style="font-size:1.5rem;font-weight:700">'+esc(w.h)+'</span><div style="min-width:0"><div class="ipa small">'+esc(w.py)+'</div><div class="small muted">'+esc(w.th)+'</div></div><span style="margin-left:auto">'+zhBtn(w.h)+'</span></div>'}).join("")+'</div>':'');
+  }
+  var q=Q.qs[Q.i], w=ZH_RAW[q.id-1], prompt="";
+  if(Q.type==="h2t")prompt='<div class="zh" style="font-size:3rem;font-weight:700">'+esc(w.h)+'</div>'+'<div class="muted small">Choose the meaning</div>';
+  else if(Q.type==="t2h")prompt='<div style="font-size:1.5rem;font-weight:700">'+esc(w.th)+'</div><div class="muted small">'+esc(w.en)+' · choose the character(s)</div>';
+  else prompt='<button class="btn" data-a="zh-say" data-t="'+esc(w.h)+'">'+ic("volume-2")+'Play word</button><div class="muted small" style="margin-top:6px">Choose the word you hear</div>';
+  var h='<div class="card" style="max-width:640px"><div class="row" style="justify-content:space-between"><span class="muted small">Question '+(Q.i+1)+' / '+Q.qs.length+' · Score '+Q.score+'</span><button class="btn sm ghost" data-a="zh-qquit">Quit</button></div><div style="margin:10px 0 16px">'+bar(Math.round(Q.i/Q.qs.length*100))+'</div><div style="margin-bottom:14px">'+prompt+'</div><div class="gap" style="gap:10px">'+q.o.map(function(id,oi){
+    var o=ZH_RAW[id-1], c=""; if(Q.ans!==null)c=oi===q.a?" ok":(oi===Q.ans?" no":"");
+    var label=Q.type==="h2t"?esc(o.th):'<span class="zh" style="font-size:1.375rem;font-weight:700">'+esc(o.h)+'</span>'+(Q.ans!==null?' <span class="ipa small">'+esc(o.py)+'</span>':'');
+    return '<button class="opt'+c+'" data-a="zh-ans" data-i="'+oi+'"'+(Q.ans!==null?' disabled':'')+'><span class="k">'+"ABCD"[oi]+'</span><span>'+label+'</span></button>'}).join("")+'</div>';
+  if(Q.ans!==null){var ok=Q.ans===q.a; h+='<div class="card" style="margin-top:14px;background:'+(ok?'rgba(94,234,212,.1)':'rgba(251,113,133,.1)')+'"><b>'+(ok?"Correct!":"Not quite")+'</b><p class="small" style="margin-top:4px"><span class="zh">'+esc(w.h)+'</span> · <span class="ipa">'+esc(w.py)+'</span> · '+esc(w.th)+'</p></div><div class="row" style="margin-top:14px;justify-content:flex-end"><button class="btn" data-a="zh-qnext">'+(Q.i===Q.qs.length-1?"See results":"Next")+ic("chevron-right")+'</button></div>'}
+  return h+'</div>';
+}
+pages.chinese=function(){
+  var h=pageTitle("Chinese for Beginners","Mandarin (HSK 1 level): vocabulary, phrases, pinyin and tones.");
+  h+='<div class="row" role="tablist" aria-label="Chinese sections" style="margin-bottom:14px">'+[["words","Words ("+ZH_RAW.length+")"],["phrases","Phrases ("+ZH_PHR.length+")"],["pinyin","Pinyin & tones"],["quiz","Quiz"]].map(function(t){return '<button class="chip" role="tab" data-a="zh-tab" data-v="'+t[0]+'" aria-pressed="'+(ZH.tab===t[0])+'">'+t[1]+'</button>'}).join("")+'</div>';
+  return h+(ZH.tab==="words"?zhWords():ZH.tab==="phrases"?zhPhrases():ZH.tab==="pinyin"?zhPinyin():zhQuiz());
+};
+function zhProg(){
+  var lc=Object.keys(S.d.zh.learned).length;
+  return '<div class="card"><div class="lbl">Chinese</div><div class="row small" style="justify-content:space-between;margin-top:10px"><b>HSK 1 level words</b><span class="muted">'+lc+' / '+ZH_RAW.length+'</span></div>'+bar(Math.round(lc/ZH_RAW.length*100))+'</div>';
+}
+document.addEventListener("click",function(e){
+  var el=e.target.closest("[data-a]"); if(!el)return; var a=el.dataset.a; if(a.indexOf("zh-")!==0)return;
+  if(a==="zh-say"){sayZh(el.dataset.t)}
+  else if(a==="zh-tab"){ZH.tab=el.dataset.v; ZH.n=30; render(true)}
+  else if(a==="zh-pin"){ZH.pin=!ZH.pin; render(true)}
+  else if(a==="zh-topic"){ZH.topic=el.dataset.v; ZH.n=30; render(true)}
+  else if(a==="zh-more"){ZH.n+=30; var r=document.getElementById("zhres"); if(r){r.innerHTML=zhRows(); refreshIcons()}}
+  else if(a==="zh-lrn"){
+    var id=+el.dataset.id;
+    if(zhL(id)){delete S.d.zh.learned[id]; toast("Moved back to learning.")}
+    else{S.d.zh.learned[id]=Date.now(); var t=ymd(); S.d.act[t]=(S.d.act[t]||0)+1; mark(); pushHist("learned",ZH_RAW[id-1].h+" "+ZH_RAW[id-1].py); toast("Learned: "+ZH_RAW[id-1].h,"ok")}
+    save(); var on=zhL(id); el.classList.toggle("ok",on); el.setAttribute("aria-pressed",on); renderChrome(); refreshIcons();
+  }
+  else if(a==="zh-qtype"){ZH.qtype=el.dataset.t; render(true)}
+  else if(a==="zh-qstart"){zhBuild(ZH.qtype||"h2t"); render(true); var Q=ZH.quiz; if(Q&&Q.type==="listen")setTimeout(function(){sayZh(ZH_RAW[Q.qs[Q.i].id-1].h)},250)}
+  else if(a==="zh-qquit"){ZH.quiz=null; render(true)}
+  else if(a==="zh-ans"){var Q1=ZH.quiz; if(!Q1||Q1.ans!==null)return; Q1.ans=+el.dataset.i; var q=Q1.qs[Q1.i]; if(Q1.ans===q.a)Q1.score++; else Q1.wrong.push(q.id); render(true)}
+  else if(a==="zh-qnext"){
+    var Q2=ZH.quiz;
+    if(Q2.i>=Q2.qs.length-1){Q2.done=true; var old=S.d.zh.best[Q2.type]; if(!old||Q2.score/Q2.qs.length>old.s/old.n)S.d.zh.best[Q2.type]={s:Q2.score,n:Q2.qs.length}; mark(); pushHist("quiz","Chinese "+Q2.score+"/"+Q2.qs.length); save(); if(Q2.score/Q2.qs.length>=.8)confetti(); render(true)}
+    else{Q2.i++; Q2.ans=null; render(true); if(Q2.type==="listen")setTimeout(function(){sayZh(ZH_RAW[Q2.qs[Q2.i].id-1].h)},250)}
+  }
+});
+document.addEventListener("input",function(e){
+  if(e.target.id==="zhq"){ZH.q=e.target.value; ZH.n=30; var r=document.getElementById("zhres"); if(r){r.innerHTML=zhRows(); refreshIcons()}}
+});
+
+
+/* =====================================================================
+   Duolingo English Test (DET) practice — original sample material
+   ===================================================================== */
+var DET_REAL=["accomplish","fragile","ledger","harvest","reluctant","tranquil","scaffold","enormous","negotiate","tolerate","glimpse","vivid","pastry","embark","dilemma","reckless","thrive","luggage","bargain","isolate","consent","sibling","hesitate","grateful","jealous","migrate","outcome","rigid","summit","urgent"];
+var DET_FAKE=["plorance","drechting","vamblent","quistrel","fronlish","tarmidge","glimbrate","snorvent","cladwick","brenthal","ostrumble","wuntry","krepline","mordish","ulphant","jindrel","trevane","blasmoid","crenfish","dopletal","fustrate","hentrice","nibbleton","orvidge"];
+var DET_CT=[
+"Many people think that learning a language is difficult. However, with regular practice, almost anyone can make steady progress. Short daily sessions are often more useful than one long lesson each week, because the brain needs time to remember new words.",
+"The town library opened in 1952 and has grown a great deal since then. Today it offers books, free internet, and classes for children and adults. Volunteers help to organize events every month, and many local families visit on weekends.",
+"Sleep plays an important role in our health. When we do not sleep enough, it becomes harder to concentrate and to remember things. Most adults need between seven and nine hours each night to feel rested during the day.",
+"Cities around the world are trying to reduce traffic. Some have built more bicycle lanes, while others have made public transport cheaper. These changes can improve air quality and make streets safer for everyone who lives there.",
+"Honey bees live in large groups called colonies. Each bee has a special job, such as collecting food or protecting the hive. Without bees, many fruits and vegetables would be much harder to grow, so farmers value them highly.",
+"Online shopping has changed how people buy things. Customers can compare prices quickly and receive goods at their door. Still, some shoppers prefer visiting stores, because they like to touch products before they decide to buy."
+];
+var DET_LT=["The meeting has been moved to Thursday afternoon.","She forgot her umbrella, so she got completely wet.","Could you tell me where the nearest pharmacy is?","My brother works at a hospital near the airport.","We should leave early to avoid the heavy traffic.","The museum is closed on Mondays and public holidays.","He has been learning to play the guitar for three years.","Please remember to turn off the lights before you leave.","The weather was so cold that the lake froze overnight.","I would rather stay at home than go to a crowded party.","Their new apartment has a small balcony with a nice view.","If it rains tomorrow, the picnic will be postponed."];
+var DET_RA=["I usually take the bus to work, but today I decided to walk.","The new library will open next month in the center of town.","Learning a language takes patience, practice, and a little courage.","Could you please send me the report before the end of the day?","My grandmother grows vegetables in her garden every summer.","Many students prefer studying in the morning when it is quiet.","The train to the airport leaves every twenty minutes.","Thank you for inviting us; we had a wonderful evening."];
+var DET_CS=[
+["The company decided to ___ its prices because sales were falling.",["lower","raise","borrow","cancel"],0,"“Lower” fits: prices are reduced when sales fall."],
+["She has lived in Bangkok ___ 2018.",["for","since","during","from"],1,"Use “since” with a starting point in time (2018); use “for” with a length of time."],
+["If I ___ more time, I would travel around the world.",["have","had","will have","would have"],1,"Second conditional: if + past simple, would + verb."],
+["The teacher asked us to ___ the form before leaving.",["fill out","fill on","fill off","fill away"],0,"“Fill out” a form is the fixed phrasal verb."],
+["He apologized for being late, ___ the traffic was terrible.",["although","because","unless","whereas"],1,"“Because” gives the reason for being late."],
+["There isn't ___ milk left in the fridge.",["some","any","many","a few"],1,"Negative sentence + uncountable noun → “any”."],
+["The new policy had a significant ___ on small businesses.",["effect","affect","effort","affection"],0,"“Effect” is the noun; “affect” is the verb."],
+["I'm looking forward to ___ you next week.",["see","seeing","saw","be seeing"],1,"After “look forward to” use the -ing form."],
+["Neither of the answers ___ correct.",["are","is","were","be"],1,"“Neither” is treated as singular → “is”."],
+["The results were ___ than we had expected.",["good","better","best","well"],1,"“Than” signals a comparative → “better”."],
+["She is ___ to receive the award next month.",["expected","expecting","expect","expectation"],0,"“Be expected to + verb” means people think it will happen."],
+["Despite ___ tired, he finished the race.",["be","being","been","to be"],1,"After “despite” use a noun or -ing form."],
+["We need to come up ___ a solution quickly.",["with","for","on","by"],0,"“Come up with” = think of an idea."],
+["The manager was impressed by her ___ to detail.",["attention","attend","attentive","attentions"],0,"“Attention to detail” is a common collocation."]
+];
+var DET_HI=[
+{p:"Maya started a small vegetable garden on her apartment balcony last spring. At first, most plants died because they received too much direct sun in the afternoon. After she moved the pots to a shadier corner and watered them in the morning, tomatoes and herbs began to grow well. Now she shares fresh basil with her neighbors.",
+ qs:[["Why did Maya's plants die at first?",["They had too much afternoon sun","They were never watered","The pots were too small","Neighbors picked them"],0],["What does Maya do with her basil now?",["Sells it at a market","Shares it with neighbors","Dries it for winter","Plants it outside"],1]]},
+{p:"Remote work has become common in many industries. Employees often enjoy the flexibility and save time on commuting. However, some workers report feeling isolated, and managers sometimes find it harder to track progress on team projects. As a result, many companies now ask staff to spend two or three days a week in the office.",
+ qs:[["What is one disadvantage of remote work mentioned?",["Longer commutes","Feeling isolated","Lower salaries","Fewer projects"],1],["What do many companies now ask of staff?",["Work remotely full-time","Come to the office on some days","Hold shorter meetings","Hire new managers"],1]]},
+{p:"The first bicycles had no pedals. Riders pushed themselves along the ground with their feet. Pedals were added decades later, and the design slowly improved with rubber tires and metal frames. Today, bicycles are used for sport, travel, and daily transport in cities across the world.",
+ qs:[["How did early riders move their bicycles?",["Using pedals","Pushing with their feet","Using small engines","Pulling a rope"],1],["What is the main idea of the passage?",["Bicycles are only for sport","Bicycles developed gradually over time","Rubber tires were invented first","Cities ban bicycles"],1]]}
+];
+var DET_WR=["Describe a place where you like to relax. Why is it special to you?","Some people prefer to study alone, while others like studying in groups. Which do you prefer and why?","Write about a person who has influenced you. What did you learn from them?","Do you think students should wear school uniforms? Give reasons for your opinion.","Describe a problem in your town and suggest one way to solve it.","What is a skill you would like to learn this year, and how will you practice it?"];
+var DET_SP=["Talk about your favorite meal and how it is prepared.","Describe a trip that you remember well.","What are the advantages and disadvantages of using social media?","Explain how you usually spend a weekend.","Describe a teacher or boss you admire and say why.","Would you rather live in a city or in the countryside? Explain."];
+var DET_KINDS=[
+ ["rs","Read and Select","Tap the words that are real English words.","check-circle","Scored: +1 for each real word, −1 for each fake one"],
+ ["rc","Read and Complete","Fill in the missing letters to finish each word in the passage.","type","Scored by the number of correct words"],
+ ["lt","Listen and Type","Listen to the sentence and type exactly what you hear.","headphones","Scored by the share of words you typed correctly"],
+ ["cs","Complete the Sentences","Choose the word or phrase that best completes the sentence.","list-checks","Instant feedback with a short reason"],
+ ["hi","Read and Answer","Read a short passage and answer questions about it.","book-open","Instant feedback"],
+ ["ra","Read Aloud","Read the sentence out loud, then listen to a model and rate yourself.","mic","Self-rated: no automatic scoring"],
+ ["mix","Mini test (12 items)","A mixed set of auto-scored tasks in the style of the real test.","timer","Practice percentage only — not an official score"]
+];
+var DET={tab:"home",run:null,ws:null};
+var detTimer=null;
+function detX(){return S.d.det}
+function detWords(s){return String(s).toLowerCase().replace(/[^a-z0-9'\s-]/g," ").split(/\s+/).filter(Boolean)}
+function detBuildRC(t){
+  var sents=t.split(/(?<=\.)\s+/), out=[], gaps=0, elig=0;
+  sents.forEach(function(s,si){
+    var parts=s.split(/(\s+)/);
+    parts.forEach(function(tok){
+      var m=tok.match(/^([A-Za-z]+)([^A-Za-z]*)$/);
+      if(si>0&&m&&m[1].length>=3&&gaps<10){
+        elig++;
+        if(elig%2===1){var w=m[1], k=Math.ceil(w.length/2); out.push({g:w.slice(k),p:w.slice(0,k),e:m[2]}); gaps++; return}
+      }
+      out.push({s:tok});
+    });
+    out.push({s:" "});
+  });
+  return out;
+}
+function detMake(kind){
+  var items=[];
+  function rs(){
+    var r=shuffle(DET_REAL.slice()).slice(0,5), f=shuffle(DET_FAKE.slice()).slice(0,4);
+    return {k:"rs",w:shuffle(r.map(function(x){return [x,1]}).concat(f.map(function(x){return [x,0]}))),sel:{}};
+  }
+  function rc(){return {k:"rc",parts:detBuildRC(DET_CT[Math.floor(Math.random()*DET_CT.length)])}}
+  function lt(){return {k:"lt",s:DET_LT[Math.floor(Math.random()*DET_LT.length)]}}
+  function cs(){var c=DET_CS[Math.floor(Math.random()*DET_CS.length)], o=c[1].map(function(x,i){return [x,i===c[2]]}); o=shuffle(o); return {k:"cs",s:c[0],o:o.map(function(x){return x[0]}),a:o.findIndex(function(x){return x[1]}),why:c[3]}}
+  function hi(){var p=DET_HI[Math.floor(Math.random()*DET_HI.length)], q=p.qs[Math.floor(Math.random()*p.qs.length)], o=shuffle(q[1].map(function(x,i){return [x,i===q[2]]})); return {k:"hi",p:p.p,q:q[0],o:o.map(function(x){return x[0]}),a:o.findIndex(function(x){return x[1]})}}
+  function ra(){return {k:"ra",s:DET_RA[Math.floor(Math.random()*DET_RA.length)]}}
+  var mk={rs:rs,rc:rc,lt:lt,cs:cs,hi:hi,ra:ra};
+  if(kind==="mix"){["rs","rs","rc","lt","lt","lt","cs","cs","cs","hi","hi","rc"].forEach(function(k){items.push(mk[k]())})}
+  else{var n=kind==="rc"?3:kind==="rs"?5:kind==="ra"?5:8; for(var i=0;i<n;i++)items.push(mk[kind]())}
+  return {kind:kind,items:items,i:0,score:0,n:0,done:false,chk:false,res:null,pick:null};
+}
+function detBegin(kind){
+  DET.run=detMake(kind); render(true);
+  var it=DET.run.items[0]; if(it.k==="lt")setTimeout(function(){say(it.s)},250);
+}
+function detInfo(k){return DET_KINDS.filter(function(x){return x[0]===k})[0]}
+function detHome(){
+  var h='<div class="gap"><div class="card"><div class="lbl">What is the Duolingo English Test?</div><p style="margin:10px 0">An online, computer-adaptive English test taken at home on a laptop or computer. Questions get easier or harder depending on your answers. It takes about an hour, and scores run from 10 to 160. Many universities accept it, so check the requirements of the schools you apply to.</p><div class="row" style="margin-top:6px"><a class="btn" href="https://englishtest.duolingo.com/" target="_blank" rel="noopener">'+ic("external-link")+'Official site</a></div><p class="small muted" style="margin-top:10px">Format, timing and question types can change. Always confirm on the official site before test day. The practice here is original material written for learning, not real test questions, and it gives no official score.</p></div>';
+  h+='<div class="card"><div class="lbl">Question types you will meet</div><div class="gauto" style="grid-template-columns:repeat(auto-fill,minmax(250px,1fr));margin-top:10px">'+[["Read and Complete","Fill in missing letters of words in a short passage"],["Read and Select","Pick the real English words from a list"],["Listen and Type","Type the sentence you hear"],["Read Aloud","Say a sentence into the microphone"],["Complete the Sentences / Passage","Choose or build the missing words"],["Highlight the Answer / Identify the Idea","Answer questions about a reading passage"],["Listen and Respond / Interactive Listening","Answer questions or reply to a conversation"],["Read, Then Write / Speak","Respond to a prompt in writing or speech"],["Writing and Speaking Samples","Free responses that institutions can read and hear"]].map(function(x){return '<div style="padding:10px 12px;border:1px solid var(--line);border-radius:12px"><b class="small">'+x[0]+'</b><div class="small muted" style="margin-top:4px">'+x[1]+'</div></div>'}).join("")+'</div></div>';
+  h+='<div class="card"><div class="lbl">Test-day tips</div><ul class="small" style="margin:10px 0 0;padding-left:20px;display:grid;gap:8px"><li>Use a quiet, well-lit room, a working webcam and microphone, and a stable internet connection. Close other apps.</li><li>Have a valid photo ID ready. The test is proctored, so follow the on-screen rules.</li><li>Read the prompt fully, answer every question, and watch the clock. Many tasks are timed.</li><li>For Listen and Type, check spelling and punctuation of every word. For Read Aloud, speak clearly and at a steady pace.</li><li>In writing and speaking, give a clear opinion, one or two reasons, and an example. Use linking words (because, however, for example).</li><li>Practice a little every day. Mix reading, listening, writing and speaking.</li></ul></div></div>';
+  return h;
+}
+function detPractice(){
+  var best=detX().best;
+  return '<div class="gauto" style="grid-template-columns:repeat(auto-fill,minmax(250px,1fr))">'+DET_KINDS.map(function(k){var b=best[k[0]];return '<button class="qtype" data-a="det-start" data-k="'+k[0]+'"><span style="color:var(--blue)">'+ic(k[3])+'</span><b>'+k[1]+'</b><span class="muted small">'+k[2]+'</span><span class="small muted">'+k[4]+'</span>'+(b?'<span class="small" style="color:var(--mint)">Best '+b+'%</span>':'')+'</button>'}).join("")+'</div>';
+}
+function detWrite(){
+  var W=DET.ws;
+  if(!W){
+    return '<div class="gap"><div class="card"><div class="lbl">Writing sample</div><p class="small muted" style="margin:8px 0 12px">Write for 5 minutes in response to a prompt. Aim for 50 words or more.</p><button class="btn" data-a="det-ws" data-k="wr">'+ic("pencil")+'Get a writing prompt</button></div><div class="card"><div class="lbl">Speaking sample</div><p class="small muted" style="margin:8px 0 12px">Speak for 1–2 minutes. Record yourself with your phone voice recorder, then listen back and check yourself.</p><button class="btn" data-a="det-ws" data-k="sp">'+ic("mic")+'Get a speaking prompt</button></div></div>';
+  }
+  var wr=W.k==="wr", list=wr?DET_WR:DET_SP, chk=wr?["I answered the question that was asked","I gave at least one reason and one example","I used linking words (because, however, for example)","I checked spelling, capital letters and punctuation","I wrote 50 words or more"]:["I answered the question directly","I gave a reason and an example","I spoke clearly without long pauses","I used linking words","I spoke for the full time"];
+  var h='<div class="card" style="max-width:720px"><div class="row" style="justify-content:space-between"><span class="lbl">'+(wr?"Writing sample":"Speaking sample")+'</span><button class="btn sm ghost" data-a="det-wsq">Close</button></div><h3 style="margin:12px 0">'+esc(list[W.i])+'</h3><div class="row" style="justify-content:space-between;margin-bottom:10px"><span class="pill" id="dett" aria-live="off">'+fmtT(W.t)+'</span>'+(wr?'<span class="small muted" id="detwc">0 words</span>':'<button class="btn sm" data-a="det-wsrun">'+ic("play")+(W.run?"Pause":"Start timer")+'</button>')+'</div>';
+  if(wr)h+='<textarea id="detw" class="inp" rows="9" placeholder="Start typing here…" style="width:100%;resize:vertical"></textarea>';
+  h+='<div class="lbl" style="margin:16px 0 8px">Self-check</div><div class="gap" style="gap:6px">'+chk.map(function(c,i){return '<label class="small" style="display:flex;gap:10px;align-items:flex-start;min-height:32px"><input type="checkbox" style="margin-top:3px"> <span>'+c+'</span></label>'}).join("")+'</div><div class="row" style="margin-top:16px"><button class="btn alt" data-a="det-ws" data-k="'+W.k+'">'+ic("refresh-cw")+'New prompt</button></div></div>';
+  return h;
+}
+function detTick(){
+  var W=DET.ws; var el=document.getElementById("dett");
+  if(!W||!el){clearInterval(detTimer);detTimer=null;return}
+  if(W.k==="wr"||W.run){W.t=Math.max(0,W.t-1); el.textContent=fmtT(W.t); if(W.t===0){clearInterval(detTimer);detTimer=null;toast("Time is up!","ok")}}
+}
+function detItemHTML(R){
+  var it=R.items[R.i], h="";
+  if(it.k==="rs"){
+    h+='<div class="lbl">Select every real English word</div><div class="row" style="margin:12px 0">'+it.w.map(function(w,i){var on=!!it.sel[i],c="";if(R.chk){c=w[1]?(on?" ok":" no2"):(on?" no":"")}return '<button class="chip detw'+c+'" data-a="det-tog" data-i="'+i+'" aria-pressed="'+on+'"'+(R.chk?' disabled':'')+' style="min-height:44px;padding:8px 18px;font-size:1rem">'+esc(w[0])+(R.chk&&w[1]&&!on?' ✓':'')+'</button>'}).join("")+'</div>';
+    if(R.chk)h+='<p class="small muted">Real words: '+it.w.filter(function(w){return w[1]}).map(function(w){return esc(w[0])}).join(", ")+'. The others are not English words.</p>';
+  }else if(it.k==="rc"){
+    var gi=0;
+    h+='<div class="lbl">Type the missing letters</div><p style="line-height:2.4;margin:12px 0;font-size:1.0625rem">'+it.parts.map(function(p){
+      if(p.s!==undefined)return esc(p.s);
+      var i=gi++, val=it.v&&it.v[i]!==undefined?it.v[i]:"", st="";
+      if(R.chk){var ok=val.trim().toLowerCase()===p.g.toLowerCase(); return '<span style="white-space:nowrap">'+esc(p.p)+'<b style="color:'+(ok?'var(--mint)':'var(--bad)')+'">'+esc(p.g)+'</b>'+esc(p.e)+'</span>'}
+      return '<span style="white-space:nowrap">'+esc(p.p)+'<input class="inp detc" data-i="'+i+'" value="'+esc(val)+'" maxlength="'+(p.g.length+2)+'" size="'+Math.max(2,p.g.length)+'" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Missing letters" style="display:inline-block;width:'+(Math.max(2,p.g.length)*1.1+1.6)+'em;min-height:36px;padding:4px 6px;text-align:center">'+esc(p.e)+'</span>';
+    }).join("")+'</p>';
+  }else if(it.k==="lt"){
+    h+='<div class="lbl">Type the sentence you hear</div><div class="row" style="margin:12px 0"><button class="btn" data-a="det-say">'+ic("volume-2")+'Play</button><button class="btn alt" data-a="det-slow">'+ic("turtle")+'Slow</button></div><textarea id="detl" class="inp" rows="3" placeholder="Type here…" autocomplete="off" autocapitalize="off" spellcheck="false"'+(R.chk?' disabled':'')+' style="width:100%">'+esc(it.v||"")+'</textarea>';
+    if(R.chk)h+='<div class="card" style="margin-top:12px"><div class="lbl">Correct sentence</div><p style="margin-top:6px">'+esc(it.s)+'</p><p class="small muted" style="margin-top:6px">You matched '+Math.round(R.res*100)+'% of the words.</p></div>';
+  }else if(it.k==="cs"||it.k==="hi"){
+    if(it.k==="hi")h+='<div class="card" style="background:rgba(255,255,255,.04);margin-bottom:12px"><p style="line-height:1.7">'+esc(it.p)+'</p></div>';
+    h+='<p style="font-size:1.125rem;font-weight:600;margin-bottom:12px">'+esc(it.k==="cs"?it.s:it.q)+'</p><div class="gap" style="gap:10px">'+it.o.map(function(o,oi){var c="";if(R.pick!==null)c=oi===it.a?" ok":(oi===R.pick?" no":"");return '<button class="opt'+c+'" data-a="det-ans" data-i="'+oi+'"'+(R.pick!==null?' disabled':'')+'><span class="k">'+"ABCD"[oi]+'</span><span>'+esc(o)+'</span></button>'}).join("")+'</div>';
+    if(R.pick!==null&&it.why)h+='<p class="small muted" style="margin-top:12px">'+esc(it.why)+'</p>';
+  }else if(it.k==="ra"){
+    h+='<div class="lbl">Read this sentence out loud</div><p style="font-size:1.25rem;font-weight:600;margin:12px 0;line-height:1.6">'+esc(it.s)+'</p><div class="row"><button class="btn" data-a="det-say">'+ic("volume-2")+'Hear a model</button></div>';
+    if(!R.chk)h+='<p class="small muted" style="margin-top:12px">Say it aloud first (you can record yourself), then rate how it went.</p>';
+  }
+  return h;
+}
+function detRun(){
+  var R=DET.run, info=detInfo(R.kind);
+  if(R.done){
+    var pct=R.n?Math.round(R.score/R.n*100):0;
+    return '<div class="card empty" style="max-width:640px">'+slot("quiz","Duolingo practice","empty")+'<div class="score">'+pct+'%</div><h3>'+esc(info[1])+'</h3><p class="muted small">'+(R.kind==="ra"?"Self-rated result.":"Practice result — not an official Duolingo score.")+'</p><div class="row" style="justify-content:center;margin-top:12px"><button class="btn" data-a="det-start" data-k="'+R.kind+'">'+ic("rotate-ccw")+'Try again</button><button class="btn ghost" data-a="det-quit">All tasks</button></div></div>';
+  }
+  var it=R.items[R.i], auto=(it.k==="cs"||it.k==="hi");
+  var h='<div class="card" style="max-width:720px"><div class="row" style="justify-content:space-between"><span class="muted small">'+esc(info[1])+' · '+(R.i+1)+' / '+R.items.length+'</span><button class="btn sm ghost" data-a="det-quit">Quit</button></div><div style="margin:10px 0 16px">'+bar(Math.round(R.i/R.items.length*100))+'</div>'+detItemHTML(R);
+  var next='<button class="btn" data-a="det-next">'+(R.i===R.items.length-1?"See results":"Next")+ic("chevron-right")+'</button>';
+  if(it.k==="ra"){
+    h+=R.chk?'<div class="row" style="margin-top:14px;justify-content:flex-end">'+next+'</div>':'<div class="row" style="margin-top:14px"><button class="btn alt" data-a="det-rate" data-v="1">Needs work</button><button class="btn alt" data-a="det-rate" data-v="2">Okay</button><button class="btn alt" data-a="det-rate" data-v="3">Clear</button></div>';
+  }else if(auto){
+    if(R.pick!==null)h+='<div class="row" style="margin-top:14px;justify-content:flex-end">'+next+'</div>';
+  }else{
+    h+='<div class="row" style="margin-top:14px;justify-content:flex-end">'+(R.chk?next:'<button class="btn" data-a="det-chk">Check'+ic("check")+'</button>')+'</div>';
+  }
+  return h+'</div>';
+}
+pages.det=function(){
+  var h=pageTitle("Duolingo English Test","Format overview and original practice for the Duolingo English Test.");
+  h+='<div class="row" role="tablist" aria-label="Duolingo test sections" style="margin-bottom:14px">'+[["home","Overview"],["prac","Practice"],["ws","Write & Speak"]].map(function(t){return '<button class="chip" role="tab" data-a="det-tab" data-v="'+t[0]+'" aria-pressed="'+(DET.tab===t[0])+'">'+t[1]+'</button>'}).join("")+'</div>';
+  if(DET.tab==="home")return h+detHome();
+  if(DET.tab==="ws")return h+detWrite();
+  return h+(DET.run?detRun():detPractice());
+};
+function detProg(){
+  var b=detX().best, ks=Object.keys(b);
+  return '<div class="card"><div class="lbl">Duolingo English Test practice</div>'+(ks.length?'<div class="row small" style="margin-top:10px;gap:14px">'+ks.map(function(k){return '<span><b>'+esc(detInfo(k)?detInfo(k)[1]:k)+'</b> <span class="muted">best '+b[k]+'%</span></span>'}).join("")+'</div>':'<p class="small muted" style="margin-top:10px">No attempts yet.</p>')+'</div>';
+}
+document.addEventListener("click",function(e){
+  var el=e.target.closest("[data-a]"); if(!el)return; var a=el.dataset.a; if(a.indexOf("det-")!==0)return;
+  var R=DET.run;
+  if(a==="det-tab"){DET.tab=el.dataset.v; render(true)}
+  else if(a==="det-start"){DET.tab="prac"; detBegin(el.dataset.k)}
+  else if(a==="det-quit"){DET.run=null; render(true)}
+  else if(a==="det-tog"){var it=R.items[R.i]; if(R.chk)return; var i=+el.dataset.i; if(it.sel[i])delete it.sel[i]; else it.sel[i]=1; render(true)}
+  else if(a==="det-say"){var s=R.items[R.i].s; say(s)}
+  else if(a==="det-slow"){var s2=R.items[R.i].s; var old=S.d.set.rate; S.d.set.rate=Math.min(old,.7); say(s2); S.d.set.rate=old}
+  else if(a==="det-chk"){
+    var it2=R.items[R.i]; if(R.chk)return; var sc=0;
+    if(it2.k==="rs"){var c=0; it2.w.forEach(function(w,i){if(it2.sel[i])c+=w[1]?1:-1}); var tot=it2.w.filter(function(w){return w[1]}).length; sc=Math.max(0,c)/tot}
+    else if(it2.k==="rc"){var vs=[].slice.call(document.querySelectorAll(".detc")).map(function(x){return x.value}); it2.v=vs; var g=it2.parts.filter(function(p){return p.g!==undefined}), ok=0; g.forEach(function(p,i){if((vs[i]||"").trim().toLowerCase()===p.g.toLowerCase())ok++}); sc=ok/g.length}
+    else if(it2.k==="lt"){var tx=document.getElementById("detl"); it2.v=tx?tx.value:""; var a1=detWords(it2.v), b1=detWords(it2.s), cnt={}; a1.forEach(function(w){cnt[w]=(cnt[w]||0)+1}); var m=0; b1.forEach(function(w){if(cnt[w]>0){m++;cnt[w]--}}); sc=m/Math.max(b1.length,a1.length,1)}
+    R.chk=true; R.res=sc; R.score+=sc; R.n++; render(true);
+  }
+  else if(a==="det-ans"){var it3=R.items[R.i]; if(R.pick!==null)return; R.pick=+el.dataset.i; R.n++; if(R.pick===it3.a)R.score++; render(true)}
+  else if(a==="det-rate"){R.chk=true; R.res=+el.dataset.v/3; R.score+=R.res; R.n++; render(true)}
+  else if(a==="det-next"){
+    if(R.i>=R.items.length-1){
+      R.done=true; var pct=R.n?Math.round(R.score/R.n*100):0; var o=detX().best[R.kind]; if(o===undefined||pct>o)detX().best[R.kind]=pct;
+      var t=ymd(); S.d.act[t]=(S.d.act[t]||0)+R.items.length; mark(); pushHist("quiz","Duolingo "+detInfo(R.kind)[1]+" "+pct+"%"); save(); renderChrome(); if(pct>=80)confetti(); render(true);
+    }else{R.i++; R.chk=false; R.res=null; R.pick=null; render(true); var nx=R.items[R.i]; if(nx.k==="lt")setTimeout(function(){say(nx.s)},250)}
+  }
+  else if(a==="det-ws"){var k=el.dataset.k; DET.ws={k:k,i:Math.floor(Math.random()*6),t:k==="wr"?300:120,run:false}; if(detTimer)clearInterval(detTimer); detTimer=setInterval(detTick,1000); render(true)}
+  else if(a==="det-wsrun"){DET.ws.run=!DET.ws.run; render(true)}
+  else if(a==="det-wsq"){DET.ws=null; if(detTimer){clearInterval(detTimer);detTimer=null} render(true)}
+});
+document.addEventListener("input",function(e){
+  if(e.target.id==="detw"){var n=(e.target.value.match(/[A-Za-z0-9'’-]+/g)||[]).length, c=document.getElementById("detwc"); if(c)c.textContent=n+" word"+(n===1?"":"s")}
+});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Enter"&&e.target.classList&&e.target.classList.contains("detc")){e.preventDefault(); var b=document.querySelector('[data-a="det-chk"]'); if(b)b.click()}
+});
+
 
 /* ---------------------------------------------------------------------
    Start
